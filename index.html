@@ -1,234 +1,994 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>거래구조 분석기 - Legal Intake Assistant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계약 검토 요청 도우미</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --header: #1a1a2e;
+      --accent: #c8a96e;
+      --subtext: #6b7a99;
+      --text: #1a1a2e;
+      --card: #ffffff;
+      --border: #ede9e0;
+      --user-text: #f5f0e8;
+      --muted: #a9a093;
+      --shadow: 0 2px 8px rgba(0,0,0,0.07);
+      --error-bg: #fff1f0;
+      --error-border: #f3c8c4;
+      --success-bg: #f8f5ed;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, serif;
+    }
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--header);
+      color: var(--accent);
+      padding: 18px 18px 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .title { font-size: 18px; font-weight: 700; }
+    .subtitle {
+      margin-top: 4px;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #decfb1;
+    }
+    .top-btn {
+      border: 1px solid rgba(200,169,110,0.45);
+      background: transparent;
+      color: var(--accent);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .top-btn:hover { background: rgba(200,169,110,0.08); }
+    .hidden { display: none !important; }
 
-<style>
-body{
-font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:#f5f6f8;
-margin:0;
-}
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .api-panel { padding: 16px; }
+    .label {
+      display: block;
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+    input[type="password"], textarea, .type-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 15px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+    .type-select {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 15px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      appearance: none;
+    }
+    textarea {
+      min-height: 126px;
+      resize: vertical;
+      line-height: 1.75;
+    }
+    input[type="password"]:focus, textarea:focus, .type-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,169,110,.12);
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.55;
+    }
+    .hint a {
+      color: var(--header);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(26,26,46,.2);
+    }
 
-header{
-background:#1b2238;
-color:white;
-padding:20px 40px;
-font-size:20px;
-font-weight:600;
-}
+    .stage-panel { padding: 14px 16px; background: linear-gradient(180deg,#fff 0%,#fcfaf6 100%); }
+    .stage-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+    .stage { color: #b6b2aa; }
+    .stage.active, .stage.done { color: var(--header); font-weight: 700; }
+    .divider { color: #d4c7b0; }
 
-.container{
-max-width:900px;
-margin:auto;
-padding:30px;
-}
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .landing, .chat-view {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+    }
+    .landing.active, .chat-view.active { display: flex; }
+    .landing-inner { padding: 20px 16px 30px; }
+    .hero {
+      background: var(--card);
+      max-width: 920px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 26px 20px 20px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.25;
+      color: var(--header);
+    }
+    .hero h1 em {
+      display: block;
+      color: var(--accent);
+      font-style: italic;
+      margin-top: 6px;
+    }
+    .hero p {
+      margin: 0 0 16px;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .guide-card {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fbf8f1;
+      border: 1px solid #ede4d3;
+      color: #554d40;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .example-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      margin-bottom: 14px;
+    }
+    .chip {
+      border: 1px solid #ddcfb7;
+      background: #fffaf2;
+      color: var(--header);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .chip:hover { background: #fcf5e7; }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+    .primary-btn {
+      border: 0;
+      background: var(--header);
+      color: var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .primary-btn:hover { opacity: .96; }
 
-.card{
-background:white;
-padding:25px;
-border-radius:12px;
-margin-bottom:20px;
-box-shadow:0 3px 8px rgba(0,0,0,0.05);
-}
+    .status {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      display: none;
+    }
+    .status.show { display: block; }
+    .status.error {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: #8a3434;
+    }
+    .status.info {
+      background: var(--success-bg);
+      border: 1px solid #e8dcc4;
+      color: #60553f;
+    }
 
-textarea{
-width:100%;
-height:120px;
-border-radius:8px;
-border:1px solid #ddd;
-padding:12px;
-font-size:14px;
-}
+    .chat-shell {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      padding: 20px 24px 24px;
+      width: min(100%, 980px);
+      margin: 0 auto;
+    }
+    .info-banner {
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      background: #fbf8f1;
+      border: 1px solid #ede4d3;
+      border-radius: 14px;
+      color: #5d5649;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .chat-log {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding-bottom: 140px;
+    }
+    .msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .msg-row.user {
+      justify-content: flex-end;
+    }
+    .avatar {
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--header);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+    .bubble {
+      max-width: min(88%, 860px);
+      padding: 18px 20px;
+      font-size: 16px;
+      line-height: 1.9;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: keep-all;
+      box-shadow: var(--shadow);
+    }
+    .assistant .bubble {
+      background: #fff;
+      overflow: visible;
+      border: 1px solid #f0ede6;
+      border-radius: 4px 12px 12px 12px;
+      color: var(--text);
+    }
+    .user .bubble {
+      background: var(--header);
+      color: var(--user-text);
+      border-radius: 12px 4px 12px 12px;
+    }
+    .typing {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      padding: 12px 14px;
+      background: #fff;
+      border: 1px solid #f0ede6;
+      border-radius: 4px 12px 12px 12px;
+      box-shadow: var(--shadow);
+    }
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #8c816f;
+      animation: pulse 1.2s infinite;
+      opacity: .3;
+    }
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes pulse {
+      0%, 100% { opacity: .3; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-1px); }
+    }
+    .composer {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(247,244,239,0) 0%, rgba(247,244,239,0.95) 16%, rgba(247,244,239,1) 34%);
+      padding-top: 14px;
+      margin-top: 6px;
+    }
+    .composer-inner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .composer textarea {
+      min-height: 108px;
+      border-radius: 12px;
+    }
+    .composer-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .composer-note {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.5;
+    }
+    .copy-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .copy-btn {
+      display: none;
+      border: 1px solid #d6c4a1;
+      background: #fffaf1;
+      color: var(--header);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .copy-btn.show { display: inline-flex; }
+     .footer-note {
+      text-align: center;
+      padding: 0 16px 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
 
-button{
-background:#1b2238;
-color:white;
-border:none;
-padding:12px 20px;
-border-radius:8px;
-margin-top:10px;
-cursor:pointer;
-}
+    
+    .bubble p { margin: 0 0 10px; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble ul, .bubble ol { margin: 8px 0 10px 1.2em; padding: 0; }
+    .bubble li { margin: 4px 0; }
+    .bubble strong { font-weight: 700; }
+    .bubble .req-title {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #fbf6ea;
+      border: 1px solid #e7d6b5;
+      color: var(--header);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .section-title {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
 
-.result{
-white-space:pre-line;
-line-height:1.7;
-}
-
-.step{
-font-size:14px;
-color:#888;
-margin-bottom:8px;
-}
-
-.notice{
-background:#fff4dc;
-padding:12px;
-border-radius:6px;
-font-size:13px;
-}
-</style>
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 26px; }
+      .chat-shell { padding: 14px 12px 18px; width: 100%; }
+      .bubble { max-width: 94%; font-size: 15px; padding: 15px 16px; }
+      .composer textarea { min-height: 92px; }
+      .header-row { align-items: flex-start; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="app">
+    <header>
+      <div class="header-row">
+        <div>
+          <div class="title">계약 검토 요청 도우미</div>
+          <div class="subtitle">LEGAL INTAKE ASSISTANT</div>
+        </div>
+        <button id="resetBtn" class="top-btn hidden" type="button">새 요청 시작</button>
+      </div>
+    </header>
 
-<header>
-거래구조 분석기 | Legal Intake Assistant
-</header>
+    <section class="panel api-panel">
+      <label class="label" for="apiKey">Gemini API Key</label>
+      <input id="apiKey" type="password" placeholder="Gemini API 키를 입력하세요" autocomplete="off" />
+      <div class="hint">
+        API 키는 브라우저 메모리에만 유지되며 저장되지 않습니다. 
+        키 발급: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
+      </div>
+    </section>
 
-<div class="container">
+    <section class="panel stage-panel">
+      <div class="stage-wrap">
+        <span id="stage1" class="stage active">① 거래 구조 파악</span>
+        <span class="divider">—</span>
+        <span id="stage2" class="stage">② 빠진 쟁점 점검</span>
+        <span class="divider">—</span>
+        <span id="stage3" class="stage">③ 법무 검토 요청서</span>
+      </div>
+    </section>
 
-<div class="card notice">
-이 도구는 현업 담당자가 법무 검토 요청 전에 거래 구조를 정리하도록 돕는 AI 도구입니다.  
-최종 법률 판단 및 계약서 검토는 반드시 법무팀과 협의해 주세요.
-</div>
+    <main>
+      <section id="landing" class="landing active">
+        <div class="landing-inner">
+          <div class="hero">
+            <h1>계약 검토 전,<em>거래를 먼저 설명해주세요.</em></h1>
+            <p>무엇을 주고받는 거래인지 자유롭게 적어주시면, 당사자별 권리·의무를 정리하고 빠진 쟁점을 함께 점검한 뒤 마지막에 법무 검토 요청서까지 작성해드립니다.</p>
+            <div class="guide-card">
+              처음에는 자세하지 않아도 괜찮습니다. AI가 먼저 계약 유형을 추정하고, 그 유형에 맞는 핵심 질문만 2~3개씩 이어서 물어봅니다.
+            </div>
+            
+            <div class="section-title">계약 유형 (선택)</div>
+            <label class="label" for="contractType">AI가 먼저 추정하되, 필요하면 직접 선택해 보정할 수 있습니다.</label>
+            <select id="contractType" class="type-select">
+              <option value="auto" selected>AI가 먼저 추정하도록 두기</option>
+              <option value="nda">비밀유지계약(NDA)</option>
+              <option value="supply">공급계약</option>
+              <option value="service">용역계약</option>
+              <option value="jointdev">공동개발계약</option>
+              <option value="license">라이선스/기술사용계약</option>
+              <option value="distribution">유통/대리점계약</option>
+              <option value="other">기타</option>
+            </select>
 
-<div class="card">
-<div class="step">① 거래 설명 입력</div>
+            <label class="label" for="landingInput">거래 설명</label>
+            <textarea id="landingInput" placeholder="예: 상대방과 공동 검토를 위해 NDA를 체결하려고 합니다. 상호 비밀유지 구조이고, 기술자료와 사업자료를 주고받을 예정입니다."></textarea>
+            <div class="example-row">
+              <button class="chip" type="button" data-example="원료 공급 계약 체결 예정입니다">원료 공급 계약 체결 예정입니다</button>
+              <button class="chip" type="button" data-example="공동개발 협약서 검토 부탁드립니다">공동개발 협약서 검토 부탁드립니다</button>
+              <button class="chip" type="button" data-example="용역 계약서 상대방안이 왔습니다">용역 계약서 상대방안이 왔습니다</button>
+              <button class="chip" type="button" data-example="비밀유지계약(NDA) 체결 예정입니다">비밀유지계약(NDA) 체결 예정입니다</button>
+            </div>
+            <div class="actions">
+              <button id="startBtn" class="primary-btn" type="button">분석 시작</button>
+            </div>
+            <div id="landingStatus" class="status"></div>
+          </div>
+        </div>
+      </section>
 
-<textarea id="input"
-placeholder="예: 협력사와 공동으로 기술 개발을 논의 중입니다. 개발 결과는 양사가 공동 활용할 예정입니다."></textarea>
+      <section id="chatView" class="chat-view">
+        <div class="chat-shell">
+          <div class="info-banner">
+            이 도구는 현업 담당자가 거래 내용을 먼저 정리하도록 돕는 초안 작성 도구입니다. 최종 계약 검토나 법적 판단은 반드시 법무팀과 협의해 주세요.
+          </div>
+          <div id="chatLog" class="chat-log"></div>
+          <div class="copy-wrap">
+            <button id="copyRequestBtn" class="copy-btn" type="button">요청서 복사</button>
+          </div>
+          <div class="composer">
+            <div class="composer-inner">
+              <textarea id="chatInput" placeholder="추가 정보를 입력하세요. 예: 독점은 아니고, 납품 지연 시 위약금 조항을 요구받고 있습니다."></textarea>
+              <div class="composer-actions">
+                <div class="composer-note">Enter로 전송, Shift+Enter로 줄바꿈</div>
+                <button id="sendBtn" class="primary-btn" type="button">보내기</button>
+              </div>
+              <div id="chatStatus" class="status"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-<button onclick="analyze()">분석 시작</button>
-</div>
+    <div class="footer-note">Vercel 배포용 단일 파일 · index.html로 저장 후 바로 배포할 수 있습니다.</div>
+  </div>
 
-<div class="card result" id="result"></div>
+  <script>
+        function getTodayString() {
+      const now = new Date();
+      return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
+    }
 
-</div>
+    function getSystemPrompt() {
+      return `당신은 기업 법무팀을 위한 현업용 Legal Intake Assistant입니다.
+현업 담당자가 법무 검토를 요청하기 전에 거래 구조를 먼저 정리하고, 계약 유형별 필수 정보와 빠진 쟁점을 확인한 뒤, 마지막에 법무팀에 바로 전달할 수 있는 요청서를 작성하도록 돕습니다.
 
-<script>
+오늘 날짜는 ${getTodayString()}입니다.
+요청서의 작성일/요청일은 반드시 위 오늘 날짜를 그대로 사용하세요.
+예시 날짜, 과거 날짜, 임의 날짜를 쓰지 마세요.
 
-function today(){
-const d=new Date()
-return d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일"
-}
+가장 중요한 목적:
+1. 현업이 법무팀에 전달해야 할 정보를 빠뜨리지 않게 한다.
+2. 계약 유형별 필수 확인 항목을 먼저 물어본다.
+3. 사용자가 말하지 않은 누락 쟁점/리스크를 찾아서 짚어준다.
+4. 마지막에는 복붙 가능한 [법무 검토 요청서]를 작성한다.
 
-function analyze(){
+응답 원칙:
+- 항상 한국어로 답하세요.
+- 설명은 친절하되 실무형으로 쓰세요.
+- 일반론을 길게 설명하지 말고, 필요한 정보 수집과 쟁점 점검 중심으로 답하세요.
+- 질문은 한 번에 2~3개만 하세요.
+- 사용자의 입력이 짧아도 먼저 거래 구조를 추정하고, 필요한 질문으로 좁혀가세요.
+- 법적 결론을 단정하지 말고 검토 포인트와 추가 확인 사항 중심으로 안내하세요.
+- 사용자가 이미 특정 계약 유형을 선택했거나 명시한 경우에는 그 정보를 우선 반영하세요.
+- 다만 사용자가 유형을 명시하지 않은 경우에는 먼저 내용을 보고 계약 유형을 추정하세요.
+- 계약 유형이 하나로 떨어지지 않으면 복합 구조로 설명하세요. 예: "NDA + 공동개발 논의 구조", "공급계약 + 기술지원 조항 가능성".
+- 미리 정의된 유형에 딱 맞지 않아도, 거래 구조를 기준으로 유사한 형식으로 분석하고 질문하세요.
 
-const text=document.getElementById("input").value
+반드시 따를 4단계 흐름:
 
-if(!text){
-alert("거래 내용을 입력해주세요")
-return
-}
+[1단계] 거래 구조 분석
+사용자 입력을 바탕으로 먼저 아래 항목을 짧게 정리하세요.
+- 추정 계약 유형
+- 거래 목적/배경
+- 우리 회사 역할
+- 상대방 역할
+- 거래 구조 한 줄 요약
 
-let type="기타 계약"
+주의:
+- NDA처럼 구조가 비교적 단순한 계약은 "권리·의무/선이행 의무"를 기계적으로 길게 설명하지 마세요.
+- 대신 그 계약에서 실무상 핵심인 항목을 먼저 잡으세요.
 
-if(text.includes("비밀")||text.includes("NDA")) type="비밀유지계약(NDA)"
-else if(text.includes("공동")||text.includes("개발")) type="공동개발계약"
-else if(text.includes("용역")||text.includes("서비스")) type="용역계약"
-else if(text.includes("공급")||text.includes("납품")) type="공급계약"
-else if(text.includes("라이선스")) type="라이선스 계약"
+[2단계] 계약 유형별 필수 정보 질문
+계약 유형에 맞는 필수 항목만 2~3개씩 물어보세요.
 
-let issue=""
+A. 비밀유지계약(NDA)라면 우선적으로 아래를 확인:
+- 일방 제공인지 / 상호 제공인지
+- 비밀정보 종류 (기술, 영업, 데이터, 고객정보, 샘플 등)
+- 사용 목적
+- 비밀유지 기간 또는 존속기간
+- 제3자 공유 허용 여부 (계열사, 자문사 포함)
+- 반환/폐기 필요 여부
 
-if(type==="비밀유지계약(NDA)"){
-issue=
-`
-추가 확인이 필요한 쟁점
+B. 공급계약이라면:
+- 공급 대상
+- 수량/단가/정산 방식
+- 납기
+- 검수 기준
+- 하자 책임
+- 독점 여부 또는 최소구매 여부
 
-1. 비밀정보 정의 범위 (기술정보 / 영업정보 / 고객정보)
-2. 비밀정보 제공 방식 (일방 제공 / 상호 제공)
-3. 비밀유지 기간
-4. 제3자 공유 허용 여부 (계열사 / 자문사)
-5. 역설계 금지 여부
-`
-}
+C. 용역계약이라면:
+- 업무 범위
+- 산출물 존재 여부
+- 검수/완료 기준
+- 대금 지급 시점
+- 지식재산권 귀속
+- 재위탁 가능 여부
 
-else if(type==="공동개발계약"){
-issue=
-`
-추가 확인이 필요한 쟁점
+D. 공동개발계약이라면:
+- 개발 목표와 역할 분담
+- 각자 제공 기술/자료
+- 결과물 및 지식재산권 귀속
+- 비용 분담
+- 사업화/실시 권한
+- 종료 후 처리
 
-1. 공동개발 결과물의 지식재산권 귀속
-2. 개발 비용 분담
-3. 기존 기술과 개발성과 구분
-4. 특허 출원 주체
-5. 개발 중단 시 성과 처리
-`
-}
+E. 라이선스/기술사용계약이라면:
+- 대상 기술/IP
+- 사용 범위 (지역, 기간, 목적)
+- 독점/비독점
+- 서브라이선스 허용 여부
+- 로열티/대가 구조
+- 개량기술 귀속
 
-else if(type==="용역계약"){
-issue=
-`
-추가 확인이 필요한 쟁점
+F. 유통/대리점계약이라면:
+- 판매 지역/채널
+- 독점 여부
+- 목표 수량/최소구매
+- 가격 정책
+- 재고/반품 처리
+- 마케팅 비용 부담
 
-1. 업무 범위 정의
-2. 산출물 존재 여부
-3. 검수 기준
-4. 지식재산권 귀속
-5. 재위탁 허용 여부
-`
-}
+G. 기타/복합 계약이라면 아래 구조를 먼저 물어보세요:
+- 누가 무엇을 제공하는지
+- 대가가 무엇인지
+- 결과물이 생기는지
+- 지식재산권/데이터가 오가는지
+- 비밀정보 교환이 있는지
+- 책임이 누구에게 집중되는지
 
-else if(type==="공급계약"){
-issue=
-`
-추가 확인이 필요한 쟁점
+[3단계] 빠진 쟁점 점검
+충분한 기본 정보가 모이면, 반드시 "추가 확인이 필요한 쟁점" 섹션을 별도로 제시하세요.
+이 단계가 매우 중요합니다.
+단순 요약하지 말고, 해당 계약에서 일반적으로 중요하지만 아직 확인되지 않았거나 위험할 수 있는 쟁점을 3~5개 찾아주세요.
 
-1. 공급 대상 제품
-2. 납기 및 검수 기준
-3. 대금 지급 조건
-4. 하자 책임
-5. 지체상금 여부
-`
-}
+형식:
+[추가 확인이 필요한 쟁점]
+1. 쟁점명: 왜 중요한지 1문장 설명
+2. 쟁점명: 왜 중요한지 1문장 설명
+...
 
-else{
-issue=
-`
-추가 확인이 필요한 쟁점
+예시:
+- NDA라면: 비밀정보 정의 범위, 예외정보 범위, 역설계 금지, 제3자 공유 범위, 반환/폐기, 손해배상/금지청구, 준거법/관할
+- 공동개발이라면: 기존 기술과 개발성과 구분, 특허 출원 주체, 비용 부담, 사업화 권한, 중도 종료 시 결과물 처리
+- 공급계약이라면: 납기 지연 책임, 검수 기준 모호성, 하자책임 기간, 위험부담 이전 시점, 위약벌/손해배상
+- 용역계약이라면: 업무 범위 불명확성, 산출물 기준, 검수 불합격 처리, IP 귀속, 재위탁 통제
 
-1. 당사자 역할 (누가 무엇을 제공하는지)
-2. 교환 구조 (대금 / 기술 / 데이터 등)
-3. 결과물 존재 여부
-4. 지식재산권 귀속
-5. 책임 및 손해배상 구조
-`
-}
+[4단계] 법무 검토 요청서 작성
+정보가 어느 정도 모이면 마지막에 반드시 아래 형식으로 정리하세요.
 
-const result=`
-
-② 거래 구조 분석
-
-입력 내용
-${text}
-
-추정 계약 유형
-${type}
-
-③ 추가 확인 필요 쟁점
-${issue}
-
-④ 법무 검토 요청서
-
-요청일: ${today()}
-
-1. 계약 유형
-${type}
-
+[법무 검토 요청서]
+요청일: ${getTodayString()}
+1. 추정 계약 유형
 2. 거래 목적 및 배경
-${text}
-
 3. 거래 구조 요약
-(추후 상세 내용 확인 필요)
+4. 주요 조건 또는 현재까지 확인된 핵심 사항
+5. 추가 확인이 필요한 쟁점
+6. 법무팀 검토 요청 사항
 
-4. 주요 검토 쟁점
-${issue}
+작성 규칙:
+- 요청서는 현업이 그대로 복붙할 수 있게 정돈된 문장으로 쓰세요.
+- "추가 확인이 필요한 쟁점"은 요청서 안에도 반영하세요.
+- 내용이 아직 부족하면 "미정/추가 확인 필요"라고 표시하세요.
+- NDA라면 비밀정보 범위, 제공 구조, 목적, 기간, 제3자 제공 여부, 반환/폐기 여부가 빠지지 않게 하세요.
+- 공동개발계약이라면 역할 분담, 결과물, IP 귀속, 비용 분담, 사업화 권한이 빠지지 않게 하세요.
+- 공급계약이라면 공급 대상, 납기, 검수, 대금, 하자 책임이 빠지지 않게 하세요.
+- 용역계약이라면 업무 범위, 산출물, 검수, 대금, IP 귀속이 빠지지 않게 하세요.
 
-5. 법무팀 검토 요청 사항
-- 계약 구조 검토
-- 주요 리스크 확인
-- 필요 시 표준 계약서 제안
-`
+대화 톤:
+- 법무팀이 현업에게 묻는 듯한 실무형 톤
+- 과도하게 딱딱하지 않되, 회사에서 실제 쓰는 문체
+- 필요할 때는 "이 부분은 법무 검토 시 중요합니다"처럼 이유를 짧게 붙여도 좋습니다.`;
+    }
 
-document.getElementById("result").innerText=result
 
-}
+    const apiKeyEl = document.getElementById('apiKey');
+    const landing = document.getElementById('landing');
+    const chatView = document.getElementById('chatView');
+    const landingInput = document.getElementById('landingInput');
+    const chatInput = document.getElementById('chatInput');
+    const startBtn = document.getElementById('startBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const chatLog = document.getElementById('chatLog');
+    const contractTypeEl = document.getElementById('contractType');
+    const landingStatus = document.getElementById('landingStatus');
+    const chatStatus = document.getElementById('chatStatus');
+    const copyRequestBtn = document.getElementById('copyRequestBtn');
+    const stageEls = [
+      document.getElementById('stage1'),
+      document.getElementById('stage2'),
+      document.getElementById('stage3')
+    ];
 
-</script>
+    let conversationHistory = [];
+    let currentStage = 1;
+    let isLoading = false;
+    let lastRequestText = '';
 
+    function showStatus(el, type, message) {
+      el.className = `status show ${type}`;
+      el.textContent = message;
+    }
+    function clearStatus(el) {
+      el.className = 'status';
+      el.textContent = '';
+    }
+
+    function setStage(stage) {
+      currentStage = Math.max(currentStage, stage);
+      stageEls.forEach((el, idx) => {
+        const n = idx + 1;
+        el.classList.remove('active', 'done');
+        if (n < currentStage) el.classList.add('done');
+        else if (n === currentStage) el.classList.add('active');
+      });
+    }
+
+    function detectStage(text) {
+      if (text.includes('[법무 검토 요청서]') || text.includes('법무 검토 요청서')) {
+        setStage(3);
+        lastRequestText = text;
+        copyRequestBtn.classList.add('show');
+        return;
+      }
+      if (
+        text.includes('이 이해가 맞나요') || text.includes('맞나요') ||
+        text.includes('독점') || text.includes('지연') || text.includes('해제') ||
+        text.includes('검수') || text.includes('비밀유지') || text.includes('손해배상') || text.includes('추가 확인이 필요한 쟁점') || text.includes('쟁점')
+      ) {
+        setStage(2);
+      }
+    }
+
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function inlineFormat(str) {
+      return str
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+
+    function renderMessage(text) {
+      let safe = escapeHtml(text).replace(/\r\n/g, '\n');
+      if (safe.includes('[법무 검토 요청서]')) {
+        safe = safe.replace('[법무 검토 요청서]', '<span class="req-title">법무 검토 요청서</span>');
+      }
+      const lines = safe.split('\n');
+      let html = '';
+      let inList = false;
+      for (const raw of lines) {
+        const line = raw.trimEnd();
+        if (!line.trim()) {
+          if (inList) { html += '</ul>'; inList = false; }
+          continue;
+        }
+        const bulletMatch = line.match(/^[-*•]\s+(.*)$/);
+        if (bulletMatch) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${inlineFormat(bulletMatch[1])}</li>`;
+          continue;
+        }
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+      if (inList) html += '</ul>';
+      return html || '<p></p>';
+    }
+
+    function addMessage(role, text, isError = false) {
+      const row = document.createElement('div');
+      row.className = `msg-row ${role === 'user' ? 'user' : 'assistant'}`;
+
+      if (role !== 'user') {
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = '법';
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = renderMessage(text);
+      if (isError && role !== 'user') {
+        bubble.style.background = '#fff3f2';
+        bubble.style.borderColor = '#f1c6c0';
+        bubble.style.color = '#8a3434';
+      }
+      row.appendChild(bubble);
+      chatLog.appendChild(row);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      return row;
+    }
+
+    function addTyping() {
+      const row = document.createElement('div');
+      row.className = 'msg-row assistant';
+      row.id = 'typingRow';
+      row.innerHTML = `
+        <div class="avatar">법</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      `;
+      chatLog.appendChild(row);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function removeTyping() {
+      const el = document.getElementById('typingRow');
+      if (el) el.remove();
+    }
+
+    async function callGemini() {
+      const apiKey = apiKeyEl.value.trim();
+      const model = 'gemini-2.5-flash';
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+      const contents = [];
+      if (conversationHistory.length > 0) {
+        contents.push({
+          role: 'user',
+          parts: [{ text: getSystemPrompt() }]
+        });
+      }
+      conversationHistory.forEach(msg => {
+        contents.push({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        });
+      });
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          generationConfig: {
+            temperature: 0.4,
+            maxOutputTokens: 4096
+          }
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const message = data?.error?.message || 'API 호출 중 오류가 발생했습니다.';
+        const status = data?.error?.status || data?.error?.code || 'ERROR';
+        throw new Error(`오류: ${status}: ${message}`);
+      }
+
+      const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('')?.trim();
+      if (!text) {
+        throw new Error('오류: EMPTY_RESPONSE: 응답 본문이 비어 있습니다.');
+      }
+      return text;
+    }
+
+    async function processInput(source) {
+      if (isLoading) return;
+      const inputEl = source === 'landing' ? landingInput : chatInput;
+      const text = inputEl.value.trim();
+      const apiKey = apiKeyEl.value.trim();
+      const statusEl = source === 'landing' ? landingStatus : chatStatus;
+      clearStatus(statusEl);
+
+      if (!apiKey && !text) {
+        showStatus(statusEl, 'error', 'Gemini API 키와 거래 설명을 먼저 입력해 주세요.');
+        return;
+      }
+      if (!apiKey) {
+        showStatus(statusEl, 'error', 'Gemini API 키를 먼저 입력해 주세요.');
+        return;
+      }
+      if (!text) {
+        showStatus(statusEl, 'error', '거래 설명 또는 추가 정보를 입력해 주세요.');
+        return;
+      }
+
+      if (source === 'landing') {
+        landing.classList.remove('active');
+        chatView.classList.add('active');
+        resetBtn.classList.remove('hidden');
+        setStage(1);
+      }
+
+      let outgoingText = text;
+      if (source === 'landing' && contractTypeEl && contractTypeEl.value !== 'auto') {
+        const typeMap = {
+          nda: '비밀유지계약(NDA)',
+          supply: '공급계약',
+          service: '용역계약',
+          jointdev: '공동개발계약',
+          license: '라이선스/기술사용계약',
+          distribution: '유통/대리점계약',
+          other: '기타 계약'
+        };
+        outgoingText = `[사용자 선택 계약 유형] ${typeMap[contractTypeEl.value] || contractTypeEl.value}\n[거래 설명]\n${text}`;
+      }
+      addMessage('user', text);
+      conversationHistory.push({ role: 'user', content: outgoingText });
+      inputEl.value = '';
+      isLoading = true;
+      addTyping();
+
+      try {
+        const reply = await callGemini();
+        removeTyping();
+        addMessage('assistant', reply);
+        conversationHistory.push({ role: 'assistant', content: reply });
+        detectStage(reply);
+        if (currentStage < 3 && source === 'landing') {
+          showStatus(chatStatus, 'info', '추가 질문에 답하면 마지막 단계에서 법무 검토 요청서가 자동으로 정리됩니다.');
+        }
+      } catch (err) {
+        removeTyping();
+        addMessage('assistant', err.message, true);
+      } finally {
+        isLoading = false;
+        chatInput.focus();
+      }
+    }
+
+    function resetApp() {
+      conversationHistory = [];
+      currentStage = 1;
+      lastRequestText = '';
+      chatLog.innerHTML = '';
+      landingInput.value = '';
+      if (contractTypeEl) contractTypeEl.value = 'auto';
+      chatInput.value = '';
+      clearStatus(landingStatus);
+      clearStatus(chatStatus);
+      copyRequestBtn.classList.remove('show');
+      setStage(1);
+      landing.classList.add('active');
+      chatView.classList.remove('active');
+      resetBtn.classList.add('hidden');
+      landingInput.focus();
+    }
+
+    startBtn.addEventListener('click', () => processInput('landing'));
+    sendBtn.addEventListener('click', () => processInput('chat'));
+    resetBtn.addEventListener('click', resetApp);
+
+    [landingInput, chatInput].forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          processInput(el === landingInput ? 'landing' : 'chat');
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-example]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        landingInput.value = btn.getAttribute('data-example');
+        landingInput.focus();
+      });
+    });
+
+    copyRequestBtn.addEventListener('click', async () => {
+      const text = lastRequestText || conversationHistory.slice().reverse().find(m => m.role === 'assistant' && m.content.includes('법무 검토 요청서'))?.content || '';
+      if (!text) {
+        showStatus(chatStatus, 'error', '복사할 요청서를 아직 찾지 못했습니다.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showStatus(chatStatus, 'info', '법무 검토 요청서를 클립보드에 복사했습니다.');
+      } catch {
+        showStatus(chatStatus, 'error', '브라우저에서 복사를 허용하지 않았습니다. 요청서를 직접 선택해 복사해 주세요.');
+      }
+    });
+
+    window.addEventListener('load', () => {
+      setStage(1);
+      landingInput.focus();
+    });
+  </script>
 </body>
 </html>
