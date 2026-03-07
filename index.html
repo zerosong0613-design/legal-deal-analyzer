@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계약 검토 요청 도우미</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --header: #1a1a2e;
+      --accent: #c8a96e;
+      --accent-soft: #f7edd9;
+      --subtext: #6b7a99;
+      --text: #1a1a2e;
+      --card: #ffffff;
+      --border: #ede9e0;
+      --user-text: #f5f0e8;
+      --disabled-bg: #e5e5e5;
+      --disabled-text: #aaaaaa;
+      --danger: #9c2f2f;
+      --shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #f7f4ef 0%, #f3eee5 100%);
+      color: var(--text);
+      font-family: Georgia, serif;
+    }
+
+    .app {
+      max-width: 760px;
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(26,26,46,0.96);
+      color: var(--accent);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    .header-inner {
+      padding: 16px 18px 14px;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: #d8c9ab;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .header-desc {
+      margin-top: 4px;
+      color: #ece2cf;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn {
+      border: 1px solid rgba(200, 169, 110, 0.45);
+      background: transparent;
+      color: var(--accent);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .ghost-btn.hidden { display: none; }
+    .ghost-btn:hover { background: rgba(200,169,110,0.08); }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      margin: 16px 16px 0;
+      overflow: hidden;
+    }
+
+    .api-panel {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #fff 0%, #fcfaf7 100%);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--header);
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .api-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .api-input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,169,110,0.12);
+    }
+
+    .api-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    .api-hint a {
+      color: var(--header);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(26,26,46,0.18);
+    }
+
+    .stage-panel {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #fff 0%, #fcfaf6 100%);
+    }
+
+    .stage-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .stage {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #efe8da;
+      background: #faf8f3;
+      color: #9b978e;
+      min-height: 68px;
+    }
+
+    .stage strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .stage span {
+      font-size: 11px;
+      line-height: 1.45;
+      display: block;
+    }
+
+    .stage.active {
+      background: #fff;
+      color: var(--header);
+      border-color: #d9c39a;
+      box-shadow: inset 0 0 0 1px rgba(200,169,110,0.12);
+    }
+
+    .stage.done {
+      background: var(--accent-soft);
+      color: #6d5834;
+      border-color: #dfc798;
+    }
+
+    .divider {
+      color: #d4c7b0;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .landing, .chat-view {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .landing.active, .chat-view.active { display: flex; }
+
+    .landing-inner {
+      padding: 22px 16px 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 26px 22px 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 31px;
+      line-height: 1.24;
+      color: var(--header);
+    }
+
+    .hero h1 em {
+      display: block;
+      margin-top: 6px;
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .helper-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+    }
+
+    .helper-card {
+      background: #fcfaf6;
+      border: 1px solid #efe7d9;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .helper-card strong {
+      display: block;
+      font-size: 13px;
+      color: var(--header);
+      margin-bottom: 6px;
+    }
+
+    .helper-card span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--subtext);
+    }
+
+    .friendly-note {
+      margin-top: 14px;
+      background: #fffaf2;
+      border: 1px solid #eadcc0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.65;
+      color: #6f644f;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.75;
+      outline: none;
+    }
+
+    .examples {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+
+    .example-btn {
+      border: 1px solid #ddcfb7;
+      background: #fffaf2;
+      color: var(--header);
+      border-radius: 999px;
+      padding: 10px 13px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .example-btn:hover { background: #fcf5e7; }
+
+    .validation {
+      display: none;
+      margin: 8px 0 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff5f5;
+      border: 1px solid #f0d1d1;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .validation.show { display: block; }
+
+    .send-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      min-width: 110px;
+      background: var(--header);
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+
+    .send-btn:disabled {
+      background: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: default;
+    }
+
+    .send-btn:active { transform: translateY(1px); }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 16px 12px;
+      scroll-behavior: smooth;
+    }
+
+    .message-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f3ecde;
+      border: 1px solid #eadbc0;
+      color: var(--header);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex: 0 0 auto;
+      margin-top: 3px;
+    }
+
+    .bubble {
+      max-width: min(83%, 580px);
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .assistant .bubble {
+      background: #fff;
+      border: 1px solid #f0ede6;
+      border-radius: 4px 12px 12px 12px;
+      box-shadow: var(--shadow);
+      color: var(--text);
+    }
+
+    .assistant .bubble.request-sheet {
+      background: #fffdf8;
+      border: 1px solid #e7d4a7;
+    }
+
+    .user .bubble {
+      background: var(--header);
+      color: var(--user-text);
+      border-radius: 12px 4px 12px 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .typing .bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 48px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #b49b69;
+      animation: pulse 1s infinite ease-in-out;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-1px); }
+    }
+
+    .chat-input-wrap {
+      position: sticky;
+      bottom: 0;
+      padding: 10px 16px 16px;
+      background: linear-gradient(180deg, rgba(247,244,239,0.6) 0%, var(--bg) 35%);
+      backdrop-filter: blur(4px);
+    }
+
+    .composer {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .composer textarea {
+      min-height: 80px;
+      border: none;
+      box-shadow: none;
+      padding: 10px 12px 6px;
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+      padding: 0 6px 2px;
+    }
+
+    .composer-tip {
+      color: var(--subtext);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .sticky-action {
+      display: none;
+      margin: 10px 16px 0;
+      padding: 12px 14px;
+      background: #fffaf2;
+      border: 1px solid #eadcc0;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sticky-action.show {
+      display: flex;
+    }
+
+    .sticky-action-text {
+      font-size: 12px;
+      color: #6f644f;
+      line-height: 1.6;
+    }
+
+    .primary-mini {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--header);
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(26,26,46,0.94);
+      color: #f7f4ef;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 50;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .error-text { color: var(--danger); }
+
+    @media (max-width: 700px) {
+      .stage-wrap {
+        grid-template-columns: 1fr;
+      }
+      .divider { display: none; }
+      .helper-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .hero h1 { font-size: 27px; }
+      .bubble { max-width: 90%; }
+      .composer-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .send-btn { width: 100%; }
+      .top-actions { width: 100%; }
+      .ghost-btn { flex: 1 1 auto; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="header-inner">
+        <div class="header-row">
+          <div>
+            <div class="eyebrow">LEGAL INTAKE ASSISTANT</div>
+            <div class="header-title">계약 검토 요청 도우미</div>
+            <div class="header-desc">현업 담당자가 거래 내용을 먼저 정리한 뒤, 마지막 단계에서 법무 검토 요청서까지 바로 만들 수 있습니다.</div>
+          </div>
+          <div class="top-actions">
+            <button id="copyRequestBtn" class="ghost-btn hidden" type="button">요청서 복사</button>
+            <button id="resetBtn" class="ghost-btn hidden" type="button">새 거래 분석</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="panel api-panel">
+      <div class="section-title">Gemini API Key 입력</div>
+      <div class="section-sub">시연용 MVP 버전입니다. 현재는 테스트를 위해 사용자 API 키를 입력받습니다.</div>
+      <input id="apiKey" class="api-input" type="password" placeholder="Gemini API 키를 입력하세요" autocomplete="off" />
+      <div class="api-hint">
+        API 키는 브라우저 메모리에만 머물고 localStorage 등에 저장하지 않습니다. 키 발급:
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
+      </div>
+    </section>
+
+    <section class="panel stage-panel">
+      <div class="stage-wrap">
+        <div id="stage1" class="stage active">
+          <strong>① 교환관계 파악</strong>
+          <span>무엇을 주고받는 거래인지 먼저 정리합니다.</span>
+        </div>
+        <div class="divider">→</div>
+        <div id="stage2" class="stage">
+          <strong>② 리스크 점검</strong>
+          <span>빠진 조건과 확인이 필요한 쟁점을 짚습니다.</span>
+        </div>
+        <div class="divider">→</div>
+        <div id="stage3" class="stage">
+          <strong>③ 검토 요청서 작성</strong>
+          <span>마지막에 법무팀 제출용 요청서를 자동으로 정리합니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <section id="landingView" class="landing active">
+        <div class="landing-inner">
+          <div class="hero">
+            <h1>계약 검토 전,<em>거래를 먼저 설명해주세요.</em></h1>
+            <p>계약서 문구가 아직 없어도 괜찮습니다. 무엇을 주고받는 거래인지 자유롭게 적어주시면, 권리·의무 관계를 정리하고 빠진 쟁점을 질문한 뒤 마지막에 <strong>법무 검토 요청서</strong>까지 작성해드립니다.</p>
+
+            <div class="helper-grid">
+              <div class="helper-card">
+                <strong>무엇을 적으면 좋나요?</strong>
+                <span>거래 목적, 우리 회사가 제공하는 내용, 상대방이 제공하는 내용, 대금 지급 방식만 있어도 시작할 수 있습니다.</span>
+              </div>
+              <div class="helper-card">
+                <strong>이런 점을 함께 봅니다</strong>
+                <span>독점 여부, 지연 시 처리, 비밀유지, 해제 조건, 책임 배분 등 빠지기 쉬운 조건을 함께 점검합니다.</span>
+              </div>
+              <div class="helper-card">
+                <strong>마지막 결과물</strong>
+                <span>법무팀에 바로 전달할 수 있는 검토 요청서 형태로 정리됩니다. 필요하면 복사해서 메일이나 시스템에 붙여넣을 수 있습니다.</span>
+              </div>
+            </div>
+
+            <textarea id="landingInput" placeholder="예: 당사가 제약 원료를 공급하고 상대방은 월말 정산으로 대금을 지급하는 구조입니다. 비독점 공급을 전제로 장기 공급계약을 검토하려고 합니다."></textarea>
+
+            <div class="examples">
+              <button type="button" class="example-btn" data-example="당사가 제약 원료를 공급하고 상대방은 월말 정산으로 대금을 지급하는 원료 공급 계약 체결 예정입니다.">원료 공급 계약 체결 예정입니다</button>
+              <button type="button" class="example-btn" data-example="당사와 상대방이 신규 제형을 함께 개발하려고 합니다. 공동개발 협약서 검토가 필요합니다.">공동개발 협약서 검토 부탁드립니다</button>
+              <button type="button" class="example-btn" data-example="상대방이 작성한 용역 계약서 초안이 왔고, 당사는 연구 지원 서비스를 제공할 예정입니다.">용역 계약서 상대방안이 왔습니다</button>
+            </div>
+
+            <div class="friendly-note">
+              팁: 처음부터 완벽하게 쓰실 필요는 없습니다. AI가 먼저 구조를 정리해드리고, 부족한 정보는 2~3개씩 차례로 질문합니다.
+            </div>
+
+            <div id="landingValidation" class="validation"></div>
+            <div class="send-row">
+              <button id="landingSendBtn" class="send-btn" type="button">분석 시작</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="requestAction" class="sticky-action">
+        <div class="sticky-action-text">요청서가 생성되었습니다. 복사해서 메일이나 계약관리시스템 요청란에 붙여넣을 수 있습니다.</div>
+        <button id="requestActionBtn" class="primary-mini" type="button">요청서 복사</button>
+      </div>
+
+      <section id="chatView" class="chat-view">
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input-wrap">
+          <div class="composer">
+            <textarea id="chatInput" placeholder="추가로 확인된 내용을 입력하세요. 예: 독점은 아니고, 납품 지연 시 위약벌은 두지 않으려 합니다."></textarea>
+            <div id="chatValidation" class="validation"></div>
+            <div class="composer-actions">
+              <div class="composer-tip">Enter 전송 · Shift+Enter 줄바꿈</div>
+              <button id="chatSendBtn" class="send-btn" type="button">전송</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SYSTEM_PROMPT = `당신은 기업 법무팀을 위한 거래구조 분석 도우미입니다.
+현업 담당자가 계약 검토를 요청하기 전에, 거래의 핵심 구조를 스스로 이해하고 정리하도록 돕는 역할입니다.
+
+반드시 다음 3단계 흐름으로 진행하세요.
+
+[1단계] 교환관계 정리
+사용자가 설명한 거래를 바탕으로 아래 형식으로 짧고 명확하게 정리하세요.
+- 우리 회사의 의무: (무엇을, 언제까지 또는 어떤 방식으로)
+- 상대방의 의무: (무엇을, 언제까지 또는 어떤 방식으로)
+- 선이행 의무: (누가 먼저 무엇을 해야 하는지)
+마지막에는 반드시 “이 이해가 맞나요?”라고 물어보세요.
+
+[2단계] 빠진 부분 질문
+사용자가 1단계 내용을 확인하면, 계약에서 빠지기 쉬운 중요한 쟁점을 2~3개만 질문하세요.
+예: 독점/비독점, 납품 지연 시 처리, 검수 기준, 해제 조건, 비밀유지, 손해배상, 대금지급 시점 등.
+한 번에 너무 많은 질문을 하지 마세요.
+
+[3단계] 검토 요청서 생성
+충분한 정보가 모이면 반드시 아래 형식으로 법무팀 제출용 요청서를 작성하세요.
+제목은 꼭 [법무 검토 요청서]로 시작하세요.
+
+[법무 검토 요청서]
+요청일: (오늘 날짜)
+1. 거래 개요
+2. 당사자별 주요 권리·의무
+3. 계약 주요 조건
+4. 법무팀 검토 요청 사항
+
+추가 원칙:
+- 말투는 친절하고 실무적이어야 합니다.
+- 사용자가 현업 담당자이므로 법률 전문용어는 꼭 필요할 때만 쓰고, 쓰더라도 쉬운 표현으로 설명하세요.
+- 아직 정보가 부족하면 3단계로 넘어가지 말고 2단계 질문을 이어가세요.
+- 3단계에서는 바로 복사해서 쓸 수 있게 문장을 정돈해서 작성하세요.
+- 응답은 항상 한국어로 작성하세요.`;
+
+    const MODEL_NAME = 'gemini-2.5-flash';
+
+    const state = {
+      conversationHistory: [],
+      currentStage: 1,
+      isLoading: false,
+      latestRequestText: ''
+    };
+
+    const apiKeyInput = document.getElementById('apiKey');
+    const landingInput = document.getElementById('landingInput');
+    const landingSendBtn = document.getElementById('landingSendBtn');
+    const landingValidation = document.getElementById('landingValidation');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatValidation = document.getElementById('chatValidation');
+    const landingView = document.getElementById('landingView');
+    const chatView = document.getElementById('chatView');
+    const chatMessages = document.getElementById('chatMessages');
+    const resetBtn = document.getElementById('resetBtn');
+    const copyRequestBtn = document.getElementById('copyRequestBtn');
+    const requestAction = document.getElementById('requestAction');
+    const requestActionBtn = document.getElementById('requestActionBtn');
+    const toast = document.getElementById('toast');
+
+    const stageEls = [
+      document.getElementById('stage1'),
+      document.getElementById('stage2'),
+      document.getElementById('stage3')
+    ];
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showValidation(target, messages) {
+      if (!messages || messages.length === 0) {
+        target.classList.remove('show');
+        target.innerHTML = '';
+        return;
+      }
+      target.innerHTML = messages.map(msg => '• ' + escapeHtml(msg)).join('<br>');
+      target.classList.add('show');
+    }
+
+    function validateInput(text) {
+      const messages = [];
+      if (!apiKeyInput.value.trim()) messages.push('Gemini API 키를 먼저 입력해주세요.');
+      if (!text.trim()) messages.push('거래 내용을 한 줄 이상 입력해주세요.');
+      return messages;
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast._timer);
+      showToast._timer = window.setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1800);
+    }
+
+    function renderTextToHtml(text) {
+      return escapeHtml(text).replace(/\n/g, '<br>');
+    }
+
+    function renderMessage(role, text, options = {}) {
+      const row = document.createElement('div');
+      row.className = `message-row ${role === 'assistant' ? 'assistant' : 'user'} ${options.typing ? 'typing' : ''}`;
+
+      if (role === 'assistant') {
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = '법';
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      if (options.requestSheet) bubble.classList.add('request-sheet');
+      if (options.typing) {
+        bubble.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+      } else {
+        bubble.innerHTML = renderTextToHtml(text);
+        if (options.isError) bubble.classList.add('error-text');
+      }
+      row.appendChild(bubble);
+
+      chatMessages.appendChild(row);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return row;
+    }
+
+    function setStage(stageNumber) {
+      state.currentStage = Math.max(state.currentStage, stageNumber);
+      stageEls.forEach((el, idx) => {
+        const num = idx + 1;
+        el.classList.remove('active', 'done');
+        if (num < state.currentStage) el.classList.add('done');
+        if (num === state.currentStage) el.classList.add('active');
+      });
+    }
+
+    function detectStageFromReply(text) {
+      const normalized = text || '';
+      if (normalized.includes('[법무 검토 요청서]') || normalized.includes('법무 검토 요청서')) {
+        setStage(3);
+        state.latestRequestText = normalized;
+        copyRequestBtn.classList.remove('hidden');
+        requestAction.classList.add('show');
+        return { requestSheet: true };
+      }
+      if (normalized.includes('맞나요') || normalized.includes('독점') || normalized.includes('지연') || normalized.includes('해제') || normalized.includes('검수') || normalized.includes('비밀유지')) {
+        setStage(2);
+      }
+      return { requestSheet: false };
+    }
+
+    function toGeminiContents(history) {
+      return history.map(item => ({
+        role: item.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: item.content }]
+      }));
+    }
+
+    async function callGemini() {
+      const apiKey = apiKeyInput.value.trim();
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: toGeminiContents(state.conversationHistory),
+          generationConfig: {
+            temperature: 0.4,
+            maxOutputTokens: 1000
+          }
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const err = data?.error;
+        throw new Error(`오류: ${err?.status || 'API_ERROR'}: ${err?.message || '요청 처리 중 문제가 발생했습니다.'}`);
+      }
+
+      const reply = data?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim();
+      if (!reply) throw new Error('오류: EMPTY_RESPONSE: 모델 응답이 비어 있습니다.');
+      return reply;
+    }
+
+    function startChatIfNeeded() {
+      if (!chatView.classList.contains('active')) {
+        landingView.classList.remove('active');
+        chatView.classList.add('active');
+        resetBtn.classList.remove('hidden');
+      }
+    }
+
+    function updateButtons() {
+      landingSendBtn.disabled = state.isLoading;
+      chatSendBtn.disabled = state.isLoading;
+    }
+
+    async function sendMessage(source) {
+      if (state.isLoading) return;
+
+      const inputEl = source === 'landing' ? landingInput : chatInput;
+      const validationEl = source === 'landing' ? landingValidation : chatValidation;
+      const text = inputEl.value.trim();
+      const messages = validateInput(text);
+      showValidation(validationEl, messages);
+      if (messages.length) return;
+
+      showValidation(landingValidation, []);
+      showValidation(chatValidation, []);
+      startChatIfNeeded();
+
+      renderMessage('user', text);
+      state.conversationHistory.push({ role: 'user', content: text });
+      inputEl.value = '';
+      requestAction.classList.remove('show');
+      updateButtons();
+
+      state.isLoading = true;
+      updateButtons();
+      const typingEl = renderMessage('assistant', '', { typing: true });
+
+      try {
+        const reply = await callGemini();
+        typingEl.remove();
+        const meta = detectStageFromReply(reply);
+        renderMessage('assistant', reply, meta);
+        state.conversationHistory.push({ role: 'assistant', content: reply });
+      } catch (error) {
+        typingEl.remove();
+        renderMessage('assistant', error.message || '오류가 발생했습니다.', { isError: true });
+      } finally {
+        state.isLoading = false;
+        updateButtons();
+        chatInput.focus();
+      }
+    }
+
+    async function copyRequest() {
+      if (!state.latestRequestText) {
+        showToast('복사할 요청서가 아직 없습니다.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(state.latestRequestText);
+        showToast('요청서를 복사했습니다.');
+      } catch (e) {
+        showToast('복사 권한이 없어 수동 복사가 필요합니다.');
+      }
+    }
+
+    function resetAll() {
+      state.conversationHistory = [];
+      state.currentStage = 1;
+      state.isLoading = false;
+      state.latestRequestText = '';
+      setStage(1);
+      chatMessages.innerHTML = '';
+      landingInput.value = '';
+      chatInput.value = '';
+      landingView.classList.add('active');
+      chatView.classList.remove('active');
+      resetBtn.classList.add('hidden');
+      copyRequestBtn.classList.add('hidden');
+      requestAction.classList.remove('show');
+      showValidation(landingValidation, []);
+      showValidation(chatValidation, []);
+      updateButtons();
+      landingInput.focus();
+    }
+
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        landingInput.value = btn.dataset.example || '';
+        landingInput.focus();
+        showValidation(landingValidation, []);
+      });
+    });
+
+    [landingInput, chatInput, apiKeyInput].forEach(el => {
+      el.addEventListener('input', () => {
+        showValidation(landingValidation, []);
+        showValidation(chatValidation, []);
+      });
+    });
+
+    landingSendBtn.addEventListener('click', () => sendMessage('landing'));
+    chatSendBtn.addEventListener('click', () => sendMessage('chat'));
+    resetBtn.addEventListener('click', resetAll);
+    copyRequestBtn.addEventListener('click', copyRequest);
+    requestActionBtn.addEventListener('click', copyRequest);
+
+    landingInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage('landing');
+      }
+    });
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage('chat');
+      }
+    });
+
+    setStage(1);
+    updateButtons();
+  </script>
+</body>
+</html>
