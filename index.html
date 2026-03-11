@@ -488,14 +488,40 @@
       display: list-item;
     }
     .user .bubble li::before { display: none; }
-    /* 거래구조 분석 항목 간격 */
-    .assistant .bubble p + p { margin-top: 4px; }
-    .assistant .bubble h3 {
-      margin: 16px 0 8px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
+    /* 선택지 버튼 */
+    .choice-row {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      margin: 10px 0 4px;
     }
-    .assistant .bubble h3:first-child { margin-top: 0; }
+    .choice-btn {
+      border: 1.5px solid var(--border-dk);
+      background: var(--bg);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-family: inherit; font-size: 13px;
+      cursor: pointer; transition: all .15s;
+    }
+    .choice-btn:hover {
+      background: var(--accent-lt);
+      border-color: var(--accent);
+      color: var(--header);
+    }
+    /* 거래구조 분석 항목 */
+    .struct-item {
+      display: flex; gap: 8px; align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px; line-height: 1.6;
+    }
+    .struct-item:last-child { border-bottom: none; }
+    .struct-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted); letter-spacing: .05em;
+      text-transform: uppercase;
+      white-space: nowrap; min-width: 90px;
+    }
+    .struct-value { color: var(--text); }
     .bubble strong { font-weight: 600; color: var(--text); }
     .bubble strong.section-label {
       display: inline-block;
@@ -907,7 +933,7 @@ function renderMarkdown(text) {
   const safe = esc(text).replace(/\r\n/g,'\n');
   const lines = safe.split('\n');
   let html = '';
-  let listType = null;   // 'ul' | 'ol' | null
+  let listType = null;
   let listBuf = '';
 
   function flushList() {
@@ -922,7 +948,32 @@ function renderMarkdown(text) {
     const line = raw.trimEnd();
     if (!line.trim()) { flushList(); continue; }
 
-    // Headings ##/###
+    // [선택] option1 | option2 | option3
+    const choiceM = line.match(/^\[선택\]\s*(.*)/);
+    if (choiceM) {
+      flushList();
+      const opts = choiceM[1].split('|').map(o => o.trim()).filter(Boolean);
+      const btns = opts.map(o =>
+        `<button class="choice-btn" onclick="submitChoice('${o.replace(/'/g,"\\'")}')">
+          ${inlineFmt(esc(o))}
+        </button>`
+      ).join('');
+      html += `<div class="choice-row">${btns}</div>`;
+      continue;
+    }
+
+    // 거래구조 항목: "레이블: 값" 패턴 (1단계 분석)
+    const structM = line.match(/^([^:：]{2,12})[：:]\s+(.*)/);
+    if (structM && !line.startsWith('-') && !line.match(/^\d+\./)) {
+      flushList();
+      html += `<div class="struct-item">
+        <span class="struct-label">${inlineFmt(structM[1])}</span>
+        <span class="struct-value">${inlineFmt(structM[2])}</span>
+      </div>`;
+      continue;
+    }
+
+    // Headings
     const h3m = line.match(/^###\s+(.*)/);
     const h2m = line.match(/^##\s+(.*)/);
     if (h3m || h2m) {
@@ -930,7 +981,7 @@ function renderMarkdown(text) {
       html += `<h3>${inlineFmt((h3m||h2m)[1])}</h3>`;
       continue;
     }
-    // HR ---
+    // HR
     if (/^-{3,}$/.test(line.trim())) { flushList(); html += '<hr>'; continue; }
     // Bullet
     const bm = line.match(/^[-*•]\s+(.*)/);
@@ -1001,6 +1052,11 @@ function renderRequestCard(body) {
     </div>`;
 }
 
+function submitChoice(value) {
+  chatInput.value = value;
+  processInput('chat');
+}
+
 function copyReqFromCard(btn) {
   const card = btn.closest('.req-card');
   const header = card.querySelector('.req-card-header').textContent.trim();
@@ -1042,7 +1098,24 @@ function getSystemPrompt() {
 - 딱 맞는 유형이 없으면 "NDA + 공동개발 전 단계 구조"처럼 복합 구조로 정리하세요.
 
 ====================
-진행 규칙 — 반드시 한 단계씩만
+선택지 형식 사용 규칙
+====================
+질문에 명확한 선택지가 있으면 반드시 아래 형식으로 선택지를 제공하세요.
+UI에서 버튼으로 자동 렌더링됩니다.
+
+형식: [선택] 옵션1 | 옵션2 | 옵션3
+
+사용 예시:
+- 정보 방향 질문: [선택] 양방향 (상호 제공) | SK가 제공 | 상대방이 제공
+- 독점 여부: [선택] 독점 | 비독점
+- 확인 질문: [선택] 네, 맞습니다 | 아니요, 수정이 필요합니다
+- 계약 종료 후 처리: [선택] 반환 | 파기 | 아직 미정
+
+주의:
+- 선택지 다음 줄에 "기타 상황은 직접 입력해주세요." 문장을 항상 붙이세요.
+- 자유 답변이 필요한 질문(금액, 기간, 구체적 내용 등)에는 사용하지 마세요.
+- 선택지는 3개 이내로 간결하게 유지하세요.
+
 ====================
 한 번의 응답에서 두 단계를 동시에 출력하면 안 됩니다.
 
