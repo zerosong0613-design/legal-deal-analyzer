@@ -607,6 +607,22 @@
       color: var(--text);
     }
 
+    /* NDA 가이드 버튼 */
+    .nda-guide-btn {
+      display: none;
+      border: none;
+      background: var(--blue);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      cursor: pointer; align-items: center; gap: 5px;
+      transition: all .15s;
+      text-decoration: none;
+    }
+    .nda-guide-btn.show { display: inline-flex; }
+    .nda-guide-btn:hover { background: #1a4a8a; }
+
     /* ── FOOTER ──────────────────────────────────────── */
     footer {
       text-align: center;
@@ -654,19 +670,19 @@
     <div class="api-header" id="apiToggle">
       <div class="api-header-left">
         <div class="api-dot" id="apiDot"></div>
-        <div class="api-label" id="apiLabel">Gemini API 키를 설정해주세요</div>
+        <div class="api-label" id="apiLabel">Anthropic API 키를 설정해주세요</div>
       </div>
       <div class="api-toggle" id="apiToggleText">▾ 열기</div>
     </div>
     <div class="api-body" id="apiBody">
       <div class="api-field">
         <input class="api-input" id="apiKey" type="password"
-          placeholder="AIza..." autocomplete="off" />
+          placeholder="sk-ant-..." autocomplete="off" />
         <button class="api-save-btn" id="apiSaveBtn" type="button">저장</button>
       </div>
       <div class="api-hint">
         브라우저 세션 동안만 유지되며 저장되지 않습니다 ·
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio에서 발급</a>
+        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console에서 발급</a>
       </div>
     </div>
   </div>
@@ -776,6 +792,9 @@
                 <button id="copyGlobalBtn" class="copy-global-btn" type="button">
                   📋 요청서 복사
                 </button>
+                <a id="ndaGuideBtn" class="nda-guide-btn" href="nda-guide-v2.html" target="_blank">
+                  📄 NDA 가이드 열기 →
+                </a>
                 <button id="sendBtn" class="primary-btn send-btn" type="button">
                   <span>보내기</span>
                   <span class="send-icon">↑</span>
@@ -1150,43 +1169,42 @@ NDA: 비밀정보 정의 범위 / 예외 정보(공개된 정보, 독자 개발 
 }
 
 /* ──────────────────────────────────────────────────
-   GEMINI API — uses systemInstruction correctly
+   ANTHROPIC API
 ────────────────────────────────────────────────── */
 async function callGemini(apiKey, history) {
-  const model = 'gemini-2.5-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = 'https://api.anthropic.com/v1/messages';
 
-  // Build contents — pure alternating user/model, no injected system user message
-  const contents = history.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
+  const messages = history.map(m => ({
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: m.content
   }));
 
   const body = {
-    systemInstruction: {
-      parts: [{ text: getSystemPrompt() }]
-    },
-    contents,
-    generationConfig: {
-      temperature: 0.35,
-      maxOutputTokens: 4096
-    }
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 4096,
+    system: getSystemPrompt(),
+    messages
   };
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-request-header': 'true'
+    },
     body: JSON.stringify(body)
   });
 
   const data = await res.json();
   if (!res.ok) {
     const msg = data?.error?.message || 'API 호출 중 오류가 발생했습니다.';
-    const status = data?.error?.status || data?.error?.code || 'ERROR';
-    throw new Error(`[${status}] ${msg}`);
+    const type = data?.error?.type || 'ERROR';
+    throw new Error(`[${type}] ${msg}`);
   }
 
-  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text||'').join('')?.trim();
+  const text = data?.content?.map(c => c.text || '').join('').trim();
   if (!text) throw new Error('[EMPTY_RESPONSE] 응답 본문이 비어 있습니다.');
   return text;
 }
@@ -1306,6 +1324,7 @@ const contractType  = document.getElementById('contractType');
 const landingStatus = document.getElementById('landingStatus');
 const chatStatus    = document.getElementById('chatStatus');
 const copyGlobalBtn = document.getElementById('copyGlobalBtn');
+const ndaGuideBtn   = document.getElementById('ndaGuideBtn');
 
 let history = [];
 let isLoading = false;
@@ -1353,7 +1372,7 @@ async function processInput(source) {
   clearStatus(statusEl);
 
   if (!apiKey) {
-    showStatus(statusEl, 'error', 'Gemini API 키를 먼저 설정해주세요. (상단 패널)');
+    showStatus(statusEl, 'error', 'Anthropic API 키를 먼저 설정해주세요. (상단 패널)');
     return;
   }
   if (!text) {
@@ -1398,6 +1417,10 @@ async function processInput(source) {
       setStep(3);
       hasRequestLetter = true;
       copyGlobalBtn.classList.add('show');
+      // NDA 계약 유형이면 가이드 버튼 노출
+      const isNda = contractType.value === 'nda' ||
+        history.some(m => /NDA|비밀유지|Confidential/i.test(m.content));
+      if (isNda) ndaGuideBtn.classList.add('show');
     }
 
     if (stage < 3 && source === 'landing') {
@@ -1445,6 +1468,7 @@ function resetApp() {
   clearStatus(landingStatus);
   clearStatus(chatStatus);
   copyGlobalBtn.classList.remove('show');
+  ndaGuideBtn.classList.remove('show');
   [1,2,3].forEach(i => {
     const el = document.getElementById(`step${i}`);
     const line = document.getElementById(`line${i}`);
