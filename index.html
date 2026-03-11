@@ -450,30 +450,61 @@
     /* Bubble inner content */
     .bubble p { margin: 0 0 8px; }
     .bubble p:last-child { margin-bottom: 0; }
-    .bubble ul, .bubble ol { margin: 6px 0 8px 1.4em; padding: 0; }
-    .bubble li { margin: 8px 0; line-height: 1.7; }
-    .bubble ol { list-style: none; margin-left: 0; padding: 0; }
-    .bubble ol li {
+    .bubble ul, .bubble ol { margin: 8px 0 8px 0; padding: 0; list-style: none; }
+    .bubble ul li, .bubble ol li {
       display: flex; gap: 10px; align-items: flex-start;
-      padding: 10px 14px;
+      padding: 9px 13px;
       background: #faf8f3;
       border: 1px solid var(--border);
       border-radius: 8px;
-      margin: 7px 0;
-      counter-increment: list-counter;
+      margin: 5px 0;
+      line-height: 1.65;
     }
+    .bubble ul li::before {
+      content: '•';
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .bubble ol { counter-reset: ol-counter; }
+    .bubble ol li { counter-increment: ol-counter; }
     .bubble ol li::before {
-      content: counter(list-counter);
+      content: counter(ol-counter);
       display: flex; align-items: center; justify-content: center;
-      min-width: 22px; height: 22px;
+      min-width: 20px; height: 20px;
       background: var(--accent);
       color: #fff;
       border-radius: 50%;
       font-size: 11px; font-weight: 700;
-      flex-shrink: 0; margin-top: 1px;
+      flex-shrink: 0; margin-top: 2px;
     }
-    .bubble ol { counter-reset: list-counter; }
+    /* 사용자 버블은 카드 스타일 적용 안 함 */
+    .user .bubble ul, .user .bubble ol { list-style: none; }
+    .user .bubble li {
+      background: transparent;
+      border: none;
+      padding: 2px 0;
+      display: list-item;
+    }
+    .user .bubble li::before { display: none; }
+    /* 거래구조 분석 항목 간격 */
+    .assistant .bubble p + p { margin-top: 4px; }
+    .assistant .bubble h3 {
+      margin: 16px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .assistant .bubble h3:first-child { margin-top: 0; }
     .bubble strong { font-weight: 600; color: var(--text); }
+    .bubble strong.section-label {
+      display: inline-block;
+      color: var(--sub);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
     .user .bubble strong { color: #fff; }
     .bubble h3 {
       font-size: 13px; font-weight: 700;
@@ -850,6 +881,7 @@ function esc(s) {
 
 function inlineFmt(s) {
   return s
+    .replace(/\*\*(.*?):\*\*/g, '<strong class="section-label">$1</strong>')
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/`([^`]+)`/g,'<code>$1</code>');
 }
