@@ -971,11 +971,12 @@ function renderMarkdown(text) {
   let html = '';
   let listType = null;
   let listBuf = '';
+  let choicesBuf = '';
 
   function flushList() {
     if (listType) {
-      html += `<${listType}>${listBuf}</${listType}>`;
-      listType = null; listBuf = '';
+      html += '<' + listType + '>' + listBuf + '</' + listType + '>' + choicesBuf;
+      listType = null; listBuf = ''; choicesBuf = '';
     }
   }
 
@@ -1029,13 +1030,25 @@ function renderMarkdown(text) {
     if (nm) {
       if (listType !== 'ol') { flushList(); listType = 'ol'; }
       const qText = nm[2];
-      const autoChoices = detectChoices(qText);
-      const choiceHtml = autoChoices.length
-        ? '<div class="choice-row">' + autoChoices.map(function(o) {
+
+      // 다음 줄이 [선택]이면 소비해서 사용, 아니면 자동 감지
+      let choices = [];
+      const nextLine = (lines[i + 1] || '').trimEnd();
+      const nextChoiceM = nextLine.match(/^\[선택\]\s*(.*)/);
+      if (nextChoiceM) {
+        choices = nextChoiceM[1].split('|').map(function(o){ return o.trim(); }).filter(Boolean);
+        i++; // [선택] 줄 건너뜀
+      } else {
+        choices = detectChoices(qText);
+      }
+
+      const choiceHtml = choices.length
+        ? '<div class="choice-row">' + choices.map(function(o) {
             return '<button class="choice-btn" data-choice="' + o.replace(/"/g,'&quot;') + '">' + inlineFmt(esc(o)) + '</button>';
           }).join('') + '</div>'
         : '';
-      listBuf += `<li>${inlineFmt(qText)}${choiceHtml}</li>`;
+      listBuf += '<li>' + inlineFmt(qText) + '</li>';
+      if (choiceHtml) choicesBuf += choiceHtml;
       continue;
     }
     flushList();
