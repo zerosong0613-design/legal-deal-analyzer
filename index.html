@@ -965,6 +965,7 @@ function detectChoices(text) {
 }
 
 
+function renderMarkdown(text) {
   const safe = esc(text).replace(/\r\n/g,'\n');
   const lines = safe.split('\n');
   let html = '';
@@ -988,11 +989,9 @@ function detectChoices(text) {
     if (choiceM) {
       flushList();
       const opts = choiceM[1].split('|').map(o => o.trim()).filter(Boolean);
-      const btns = opts.map(o =>
-        `<button class="choice-btn" onclick="submitChoice('${o.replace(/'/g,"\\'")}')">
-          ${inlineFmt(esc(o))}
-        </button>`
-      ).join('');
+      const btns = opts.map(function(o) {
+        return '<button class="choice-btn" data-choice="' + o.replace(/"/g,'&quot;') + '">' + inlineFmt(esc(o)) + '</button>';
+      }).join('');
       html += `<div class="choice-row">${btns}</div>`;
       continue;
     }
@@ -1032,9 +1031,9 @@ function detectChoices(text) {
       const qText = nm[2];
       const autoChoices = detectChoices(qText);
       const choiceHtml = autoChoices.length
-        ? `<div class="choice-row">${autoChoices.map(o =>
-            `<button class="choice-btn" onclick="submitChoice('${o.replace(/'/g,"\\'")}')">${inlineFmt(esc(o))}</button>`
-          ).join('')}</div>`
+        ? '<div class="choice-row">' + autoChoices.map(function(o) {
+            return '<button class="choice-btn" data-choice="' + o.replace(/"/g,'&quot;') + '">' + inlineFmt(esc(o)) + '</button>';
+          }).join('') + '</div>'
         : '';
       listBuf += `<li>${inlineFmt(qText)}${choiceHtml}</li>`;
       continue;
@@ -1096,7 +1095,6 @@ function renderRequestCard(body) {
 
 function submitChoice(value) {
   const input = document.getElementById('chatInput');
-  // 이미 입력된 내용이 있으면 이어 붙이기, 없으면 그냥 설정
   if (input.value.trim()) {
     input.value = input.value.trimEnd() + ' / ' + value;
   } else {
@@ -1104,6 +1102,12 @@ function submitChoice(value) {
   }
   input.focus();
 }
+
+// 이벤트 위임: data-choice 버튼 클릭
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.choice-btn[data-choice]');
+  if (btn) submitChoice(btn.getAttribute('data-choice'));
+});
 
 function copyReqFromCard(btn) {
   const card = btn.closest('.req-card');
