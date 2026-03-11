@@ -1053,8 +1053,14 @@ function renderRequestCard(body) {
 }
 
 function submitChoice(value) {
-  chatInput.value = value;
-  processInput('chat');
+  const input = document.getElementById('chatInput');
+  // 이미 입력된 내용이 있으면 이어 붙이기, 없으면 그냥 설정
+  if (input.value.trim()) {
+    input.value = input.value.trimEnd() + ' / ' + value;
+  } else {
+    input.value = value;
+  }
+  input.focus();
 }
 
 function copyReqFromCard(btn) {
