@@ -1172,7 +1172,7 @@ NDA: 비밀정보 정의 범위 / 예외 정보(공개된 정보, 독자 개발 
    ANTHROPIC API
 ────────────────────────────────────────────────── */
 async function callGemini(apiKey, history) {
-  const url = 'https://api.anthropic.com/v1/messages';
+  const url = '/api/proxy';
 
   const messages = history.map(m => ({
     role: m.role === 'assistant' ? 'assistant' : 'user',
