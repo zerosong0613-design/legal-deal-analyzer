@@ -643,35 +643,61 @@ function inlineFmt(s) {
 /* ── CHOICE TAG INJECTOR ──
    AI(Gemini)가 [선택] 태그를 빠뜨릴 때 질문 패턴을 보고 자동 주입 */
 function injectChoiceTags(text) {
+  // 문장 단위로 [선택] 주입 — 번호 목록 줄뿐 아니라 일반 문장도 커버
   const lines = text.split('\n');
   const out = [];
   for (let i = 0; i < lines.length; i++) {
     out.push(lines[i]);
-    const line = lines[i];
-    if (!/^\d+\.\s+/.test(line)) continue;          // 번호 목록 줄만
-    if ((lines[i+1]||'').trim().startsWith('[선택]')) continue; // 이미 있음
+    const line = lines[i].trim();
+    if (!line) continue;
+    // 이미 다음 줄에 [선택]이 있으면 스킵
+    if ((lines[i+1]||'').trim().startsWith('[선택]')) continue;
+    // 번호 목록이거나 물음표로 끝나는 문장만 검사
+    const isQ = /^\d+\.\s+/.test(lines[i]) || line.endsWith('?') || line.endsWith('나요') || line.endsWith('인가요') || line.endsWith('까요') || line.endsWith('하나요');
+    if (!isQ) continue;
 
     const q = line.replace(/^\d+\.\s+/, '');
     let sel = null;
 
-    if (/주고받|상호\s*제공|양방향|양쪽.*제공|정보.*방향|단방향|어느\s*쪽.*제공|제공.*구조/.test(q))
+    // 정보 제공 방향
+    if (/주고받|상호.*제공|양방향|양쪽.*제공|정보.*방향|단방향|한쪽.*제공|제공.*구조|어느.*방향|누가.*제공/.test(q))
       sel = '[선택] 양방향 (상호 제공) | SK가 제공 | 상대방이 제공';
+    // 독점
     else if (/독점/.test(q))
       sel = '[선택] 독점 | 비독점 | 아직 미정';
-    else if (/(반환|파기|돌려|처리)/.test(q) && /(계약.*끝|종료|끝나|만료)/.test(q))
+    // 계약 종료 후 자료 처리
+    else if (/(반환|파기|돌려주|처리)/.test(q) && /(계약|종료|끝|만료|후)/.test(q))
       sel = '[선택] 반환 | 파기 | 아직 미정';
-    else if (/맞[나는]지|맞나요|맞습니까|이해.*맞/.test(q))
+    // 구조 확인
+    else if (/맞[나는]지|맞나요|맞습니까|이해가 맞|위.*내용.*맞|확인해 주/.test(q))
       sel = '[선택] 네, 맞습니다 | 일부 수정 필요 | 아니요, 다릅니다';
-    else if (/(제3자|외부).*공유|자문사|계열사.*공유|공유해야/.test(q))
+    // 제3자/외부 공유
+    else if (/(제3자|외부|자문사|계열사).*공유|공유해야|공유.*필요|외부.*공개/.test(q))
       sel = '[선택] 공유 없음 | 계열사/자문사에만 | 별도 협의 필요';
-    else if (/준거법|관할|어느.*법원/.test(q))
+    // 준거법/관할
+    else if (/준거법|관할|어느.*법원|법원.*어디/.test(q))
       sel = '[선택] 한국법 | 미정 | 상대방 요청 있음';
-    else if (/재위탁|하도급|다른.*업체.*넘/.test(q))
+    // 재위탁/하도급
+    else if (/재위탁|하도급|다른.*업체|외주|위탁.*가능/.test(q))
       sel = '[선택] 허용 | 불허 | 사전 동의 조건으로 허용';
-    else if (/검수.*기준|완료.*기준|판단.*기준/.test(q))
+    // 검수/완료 기준
+    else if (/검수.*기준|완료.*기준|판단.*기준|완료.*어떻게|기준.*있/.test(q))
       sel = '[선택] 네, 기준 있음 | 아직 없음 | 협의 중';
-    else if (/있[나으신]*가요|있으신가요/.test(q) && !/어떤|어느|얼마|어디|누가|왜|무엇|목적|어떻게|종류|내용/.test(q))
+    // 계약 기간/기간 설정
+    else if (/기간.*정|유효.*기간|비밀유지.*기간|계약.*기간.*어/.test(q))
+      sel = '[선택] 1년 | 2년 | 3년 | 별도 협의';
+    // IP/결과물 귀속
+    else if (/(결과물|특허|지식재산|IP|기술).*누구|귀속.*어떻게|누구.*것이/.test(q))
+      sel = '[선택] SK 단독 | 공동 소유 | 상대방 단독 | 아직 미정';
+    // 비용 분담
+    else if (/비용.*어떻게|비용.*분담|누가.*부담/.test(q))
+      sel = '[선택] SK 전액 | 50:50 분담 | 상대방 전액 | 별도 협의';
+    // 단순 있다/없다
+    else if (/있[나으신]*가요$|있으신가요$|있나요$/.test(q) && !/어떤|어느|얼마|어디|누가|왜|무엇|목적|어떻게|종류|내용|방향/.test(q))
       sel = '[선택] 있습니다 | 없습니다';
+    // 예/아니오
+    else if (/예정인가요$|계획인가요$|할 예정인가요$/.test(q))
+      sel = '[선택] 예, 있습니다 | 아직 미정 | 아니요';
 
     if (sel) {
       out.push(sel);
@@ -1138,7 +1164,9 @@ async function callGemini(apiKey, history) {
 /* ── STAGE DETECTION ── */
 function detectStage(text) {
   if (text.includes('[법무 검토 요청서]')) return 3;
-  if (text.includes('[3단계]') || text.includes('추가 확인이 필요한 쟁점')) return 2;
+  // Gemini가 마커 없이 요청서 형태로 출력할 때도 감지
+  if (/추정\s*계약\s*유형.*거래\s*목적|거래\s*목적.*거래\s*구조|법무팀\s*검토\s*요청/.test(text.replace(/\n/g,''))) return 3;
+  if (text.includes('[3단계]') || text.includes('추가 확인이 필요한 쟁점') || text.includes('쟁점 점검')) return 2;
   if (text.includes('[2단계]') || text.includes('필수 정보 확인')) return 2;
   return null;
 }
@@ -1291,15 +1319,17 @@ async function processInput(source) {
     addMessage('assistant', reply);
     history.push({ role: 'assistant', content: reply });
     const stage = detectStage(reply);
-    if (stage === 2) setStep(2);
+    const isNda = contractType.value === 'nda' ||
+      history.some(m => /NDA|비밀유지|Confidential/i.test(m.content));
+    if (stage === 2) { setStep(2); if (isNda) ndaGuideBtn.classList.add('show'); }
     if (stage === 3) {
       setStep(3);
       hasRequestLetter = true;
       copyGlobalBtn.classList.add('show');
-      const isNda = contractType.value === 'nda' ||
-        history.some(m => /NDA|비밀유지|Confidential/i.test(m.content));
       if (isNda) ndaGuideBtn.classList.add('show');
     }
+    // 마커 없이도 NDA면 항상 버튼 노출
+    if (isNda && history.length >= 2) ndaGuideBtn.classList.add('show');
     if (stage < 3 && source === 'landing') {
       showStatus(chatStatus, 'tip', '추가 질문에 답하면 마지막 단계에서 법무 검토 요청서가 자동으로 작성됩니다.');
     }
