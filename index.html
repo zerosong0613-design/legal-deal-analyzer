@@ -38,7 +38,6 @@
       line-height: 1.6;
     }
 
-    /* ── APP SHELL ───────────────────────────────────── */
     .app {
       max-width: 1100px;
       margin: 0 auto;
@@ -47,7 +46,6 @@
       flex-direction: column;
     }
 
-    /* ── HEADER ──────────────────────────────────────── */
     header {
       position: sticky; top: 0; z-index: 30;
       background: var(--header);
@@ -58,9 +56,7 @@
       height: 56px;
       box-shadow: 0 1px 0 rgba(255,255,255,.04), 0 2px 8px rgba(0,0,0,.18);
     }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .logo { display: flex; align-items: center; gap: 10px; }
     .logo-icon {
       width: 32px; height: 32px;
       border-radius: 8px;
@@ -72,14 +68,8 @@
       flex-shrink: 0;
     }
     .logo-text { display: flex; flex-direction: column; gap: 1px; }
-    .logo-main {
-      font-size: 14px; font-weight: 600;
-      color: #fff; line-height: 1;
-    }
-    .logo-sub {
-      font-size: 9px; letter-spacing: .14em;
-      text-transform: uppercase; color: #7a7060; line-height: 1;
-    }
+    .logo-main { font-size: 14px; font-weight: 600; color: #fff; line-height: 1; }
+    .logo-sub { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #7a7060; line-height: 1; }
     .header-right { display: flex; align-items: center; gap: 8px; }
     .ghost-btn {
       border: 1px solid rgba(196,147,63,.35);
@@ -94,7 +84,6 @@
     .ghost-btn:hover { background: rgba(196,147,63,.1); }
     .hidden { display: none !important; }
 
-    /* ── API KEY PANEL ───────────────────────────────── */
     .api-wrap {
       margin: 12px 16px 0;
       background: var(--surface);
@@ -122,9 +111,7 @@
     .api-toggle { font-size: 12px; color: var(--muted); }
     .api-body { padding: 0 14px 14px; border-top: 1px solid var(--border); }
     .api-body.collapsed { display: none; }
-    .api-field {
-      display: flex; gap: 8px; margin-top: 11px; align-items: center;
-    }
+    .api-field { display: flex; gap: 8px; margin-top: 11px; align-items: center; }
     .api-input {
       flex: 1;
       border: 1px solid var(--border);
@@ -149,13 +136,9 @@
       cursor: pointer; white-space: nowrap;
     }
     .api-save-btn:hover { opacity: .9; }
-    .api-hint {
-      margin-top: 8px;
-      font-size: 12px; color: var(--muted); line-height: 1.5;
-    }
+    .api-hint { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
     .api-hint a { color: var(--sub); }
 
-    /* ── PROGRESS STEPS ─────────────────────────────── */
     .steps-wrap {
       margin: 10px 16px 0;
       background: var(--surface);
@@ -164,13 +147,8 @@
       padding: 13px 18px;
       box-shadow: var(--shadow-sm);
     }
-    .steps {
-      display: flex; align-items: center; gap: 0;
-    }
-    .step {
-      display: flex; align-items: center; gap: 8px;
-      flex: 1;
-    }
+    .steps { display: flex; align-items: center; gap: 0; }
+    .step { display: flex; align-items: center; gap: 8px; flex: 1; }
     .step-dot {
       width: 26px; height: 26px; border-radius: 50%;
       border: 2px solid var(--border-dk);
@@ -180,49 +158,20 @@
       flex-shrink: 0;
       transition: all .25s;
     }
-    .step.active .step-dot {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #fff;
-    }
-    .step.done .step-dot {
-      border-color: #5aba7a;
-      background: #5aba7a;
-      color: #fff;
-    }
+    .step.active .step-dot { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .step.done .step-dot { border-color: #5aba7a; background: #5aba7a; color: #fff; }
     .step-done-icon { font-size: 12px; }
-    .step-text {
-      font-size: 12px; font-weight: 500;
-      color: var(--muted);
-      white-space: nowrap;
-      transition: color .25s;
-    }
+    .step-text { font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; transition: color .25s; }
     .step.active .step-text { color: var(--text); }
     .step.done .step-text { color: #3a8f56; }
-    .step-line {
-      flex: 1;
-      height: 2px;
-      background: var(--border);
-      margin: 0 6px;
-      border-radius: 2px;
-      transition: background .25s;
-    }
+    .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 6px; border-radius: 2px; transition: background .25s; }
     .step-line.done { background: #5aba7a; }
 
-    /* ── MAIN ────────────────────────────────────────── */
-    main {
-      flex: 1; display: flex; flex-direction: column; min-height: 0;
-    }
-    .view {
-      display: none; flex: 1; min-height: 0; flex-direction: column;
-    }
+    main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .view { display: none; flex: 1; min-height: 0; flex-direction: column; }
     .view.active { display: flex; }
 
-    /* ── LANDING ─────────────────────────────────────── */
-    .landing-inner {
-      padding: 20px 16px 32px;
-      max-width: 820px; width: 100%; margin: 0 auto;
-    }
+    .landing-inner { padding: 20px 16px 32px; max-width: 820px; width: 100%; margin: 0 auto; }
     .hero-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -233,53 +182,32 @@
     .hero-top {
       background: var(--header);
       padding: 24px 24px 20px;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     .hero-top::after {
       content: '';
       position: absolute; right: -30px; top: -30px;
-      width: 160px; height: 160px;
-      border-radius: 50%;
-      background: rgba(196,147,63,.12);
-      pointer-events: none;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(196,147,63,.12); pointer-events: none;
     }
     .hero-tag {
       display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(196,147,63,.15);
-      border: 1px solid rgba(196,147,63,.3);
-      color: var(--accent);
-      font-size: 10px; letter-spacing: .12em;
+      background: rgba(196,147,63,.15); border: 1px solid rgba(196,147,63,.3);
+      color: var(--accent); font-size: 10px; letter-spacing: .12em;
       text-transform: uppercase; font-weight: 600;
-      padding: 4px 9px; border-radius: 999px;
-      margin-bottom: 12px;
+      padding: 4px 9px; border-radius: 999px; margin-bottom: 12px;
     }
-    .hero-h {
-      margin: 0 0 8px;
-      font-family: 'Noto Serif KR', serif;
-      font-size: 26px; font-weight: 700;
-      color: #fff; line-height: 1.3;
-    }
-    .hero-h em {
-      color: var(--accent); font-style: italic; font-family: 'Noto Serif KR', serif;
-    }
-    .hero-p {
-      margin: 0;
-      color: #9990837; font-size: 14px; line-height: 1.8;
-      color: #a09080;
-    }
+    .hero-h { margin: 0 0 8px; font-family: 'Noto Serif KR', serif; font-size: 26px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .hero-h em { color: var(--accent); font-style: italic; font-family: 'Noto Serif KR', serif; }
+    .hero-p { margin: 0; font-size: 14px; line-height: 1.8; color: #a09080; }
     .hero-body { padding: 22px 24px; }
 
-    .flow-steps {
-      display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
-    }
+    .flow-steps { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .flow-step {
       flex: 1; min-width: 120px;
       display: flex; align-items: flex-start; gap: 9px;
-      background: #faf8f3;
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 11px 12px;
+      background: #faf8f3; border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 11px 12px;
     }
     .flow-num {
       width: 20px; height: 20px; border-radius: 50%;
@@ -292,104 +220,52 @@
     .flow-label strong { display: block; font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 1px; }
 
     .field-group { margin-bottom: 16px; }
-    .field-label {
-      display: block;
-      font-size: 12px; font-weight: 600;
-      color: var(--sub);
-      margin-bottom: 6px; letter-spacing: .02em;
-    }
+    .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--sub); margin-bottom: 6px; letter-spacing: .02em; }
     select.type-sel {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 10px 13px;
-      background: #fff;
-      color: var(--text);
-      font-family: inherit; font-size: 14px;
-      outline: none; appearance: none;
+      width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 10px 13px; background: #fff; color: var(--text);
+      font-family: inherit; font-size: 14px; outline: none; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a39b90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 13px center;
-      padding-right: 36px;
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px;
     }
-    select.type-sel:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196,147,63,.12);
-    }
+    select.type-sel:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,147,63,.12); }
     textarea.main-ta {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 13px 14px;
-      background: #fff;
-      color: var(--text);
-      font-family: inherit; font-size: 14px;
-      line-height: 1.75;
-      min-height: 130px;
-      resize: vertical; outline: none;
+      width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 13px 14px; background: #fff; color: var(--text);
+      font-family: inherit; font-size: 14px; line-height: 1.75;
+      min-height: 130px; resize: vertical; outline: none;
     }
-    textarea.main-ta:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196,147,63,.12);
-    }
+    textarea.main-ta:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,147,63,.12); }
     textarea.main-ta::placeholder { color: var(--muted); }
 
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .chip {
-      border: 1px solid var(--border-dk);
-      background: var(--bg);
-      color: var(--sub);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-family: inherit; font-size: 12px;
-      cursor: pointer; transition: all .15s;
+      border: 1px solid var(--border-dk); background: var(--bg); color: var(--sub);
+      border-radius: 999px; padding: 6px 12px;
+      font-family: inherit; font-size: 12px; cursor: pointer; transition: all .15s;
     }
-    .chip:hover {
-      background: var(--accent-lt); border-color: var(--accent);
-      color: var(--text);
-    }
-    .landing-actions {
-      display: flex; justify-content: flex-end; align-items: center;
-      gap: 10px; margin-top: 16px;
-    }
+    .chip:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--text); }
+    .landing-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 16px; }
     .primary-btn {
-      border: 0;
-      background: var(--header);
-      color: var(--accent);
-      padding: 11px 20px;
-      border-radius: var(--r-sm);
+      border: 0; background: var(--header); color: var(--accent);
+      padding: 11px 20px; border-radius: var(--r-sm);
       font-family: inherit; font-size: 14px; font-weight: 600;
       cursor: pointer; transition: opacity .15s;
     }
     .primary-btn:hover { opacity: .9; }
     .primary-btn:disabled { opacity: .45; cursor: not-allowed; }
-    .send-btn {
-      display: flex; align-items: center; gap: 6px;
-    }
+    .send-btn { display: flex; align-items: center; gap: 6px; }
     .send-icon { font-size: 13px; }
 
     .status-msg {
-      margin-top: 10px;
-      padding: 10px 13px;
-      border-radius: var(--r-sm);
-      font-size: 13px; line-height: 1.55;
-      display: none;
+      margin-top: 10px; padding: 10px 13px; border-radius: var(--r-sm);
+      font-size: 13px; line-height: 1.55; display: none;
     }
     .status-msg.show { display: block; }
-    .status-msg.error {
-      background: var(--err-bg); border: 1px solid var(--err-bd);
-      color: #8a3030;
-    }
-    .status-msg.info {
-      background: #f0f7ee; border: 1px solid #bde0c6;
-      color: #2e6a3e;
-    }
-    .status-msg.tip {
-      background: var(--accent-lt); border: 1px solid #dcc88e;
-      color: #6a4a10;
-    }
+    .status-msg.error { background: var(--err-bg); border: 1px solid var(--err-bd); color: #8a3030; }
+    .status-msg.info { background: #f0f7ee; border: 1px solid #bde0c6; color: #2e6a3e; }
+    .status-msg.tip { background: var(--accent-lt); border: 1px solid #dcc88e; color: #6a4a10; }
 
-    /* ── CHAT VIEW ───────────────────────────────────── */
     .chat-shell {
       display: flex; flex-direction: column;
       flex: 1; min-height: 0;
@@ -397,12 +273,9 @@
       width: min(100%, 920px); margin: 0 auto;
     }
     .disclaimer {
-      margin-bottom: 12px;
-      padding: 10px 13px;
-      background: var(--accent-lt);
-      border: 1px solid #dcc88e;
-      border-radius: var(--r-sm);
-      color: #6a4a10; font-size: 12px; line-height: 1.55;
+      margin-bottom: 12px; padding: 10px 13px;
+      background: var(--accent-lt); border: 1px solid #dcc88e;
+      border-radius: var(--r-sm); color: #6a4a10; font-size: 12px; line-height: 1.55;
     }
     .chat-log {
       flex: 1; overflow: auto;
@@ -410,213 +283,119 @@
       padding-bottom: 160px;
     }
 
-    /* ── MESSAGES ────────────────────────────────────── */
-    .msg-row {
-      display: flex; align-items: flex-start; gap: 10px;
-    }
+    .msg-row { display: flex; align-items: flex-start; gap: 10px; }
     .msg-row.user { justify-content: flex-end; }
     .avatar {
       width: 32px; height: 32px; border-radius: 50%;
       background: var(--header);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow-sm);
     }
-    .avatar-svg {
-      width: 100%; height: 100%;
-    }
+    .avatar-svg { width: 100%; height: 100%; }
     .bubble {
-      max-width: min(86%, 820px);
-      padding: 14px 18px;
-      font-size: 14.5px;
-      line-height: 1.85;
+      max-width: min(86%, 820px); padding: 14px 18px;
+      font-size: 14.5px; line-height: 1.85;
       overflow-wrap: anywhere; word-break: keep-all;
       box-shadow: var(--shadow-sm);
     }
     .assistant .bubble {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px 14px 14px 14px;
-      color: var(--text);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 3px 14px 14px 14px; color: var(--text);
     }
     .user .bubble {
-      background: var(--header);
-      color: #e8e0d5;
-      border-radius: 14px 3px 14px 14px;
-      font-size: 14px;
+      background: var(--header); color: #e8e0d5;
+      border-radius: 14px 3px 14px 14px; font-size: 14px;
     }
-
-    /* Bubble inner content */
     .bubble p { margin: 0 0 8px; }
     .bubble p:last-child { margin-bottom: 0; }
     .bubble ul, .bubble ol { margin: 8px 0 8px 0; padding: 0; list-style: none; }
     .bubble ul li, .bubble ol li {
       display: flex; gap: 10px; align-items: flex-start;
-      padding: 9px 13px;
-      background: #faf8f3;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin: 5px 0;
-      line-height: 1.65;
+      padding: 9px 13px; background: #faf8f3;
+      border: 1px solid var(--border); border-radius: 8px;
+      margin: 5px 0; line-height: 1.65;
     }
-    .bubble ul li::before {
-      content: '•';
-      color: var(--accent);
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .bubble ul li::before { content: '•'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
     .bubble ol { counter-reset: ol-counter; }
     .bubble ol li { counter-increment: ol-counter; }
     .bubble ol li::before {
       content: counter(ol-counter);
       display: flex; align-items: center; justify-content: center;
       min-width: 20px; height: 20px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 50%;
-      font-size: 11px; font-weight: 700;
+      background: var(--accent); color: #fff;
+      border-radius: 50%; font-size: 11px; font-weight: 700;
       flex-shrink: 0; margin-top: 2px;
     }
-    /* 사용자 버블은 카드 스타일 적용 안 함 */
     .user .bubble ul, .user .bubble ol { list-style: none; }
-    .user .bubble li {
-      background: transparent;
-      border: none;
-      padding: 2px 0;
-      display: list-item;
-    }
+    .user .bubble li { background: transparent; border: none; padding: 2px 0; display: list-item; }
     .user .bubble li::before { display: none; }
-    /* 선택지 버튼 */
-    .choice-row {
-      display: flex; flex-wrap: wrap; gap: 7px;
-      margin: 10px 0 4px;
-    }
+    .choice-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 4px; }
     .choice-btn {
-      border: 1.5px solid var(--border-dk);
-      background: var(--bg);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-family: inherit; font-size: 13px;
-      cursor: pointer; transition: all .15s;
+      border: 1.5px solid var(--border-dk); background: var(--bg); color: var(--text);
+      padding: 8px 14px; border-radius: 999px;
+      font-family: inherit; font-size: 13px; cursor: pointer; transition: all .15s;
     }
-    .choice-btn:hover {
-      background: var(--accent-lt);
-      border-color: var(--accent);
-      color: var(--header);
-    }
-    /* 거래구조 분석 항목 */
+    .choice-btn:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--header); }
     .struct-item {
       display: flex; gap: 8px; align-items: baseline;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 7px 0; border-bottom: 1px solid var(--border);
       font-size: 14px; line-height: 1.6;
     }
     .struct-item:last-child { border-bottom: none; }
     .struct-label {
-      font-size: 11px; font-weight: 700;
-      color: var(--muted); letter-spacing: .05em;
-      text-transform: uppercase;
-      white-space: nowrap; min-width: 90px;
+      font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .05em;
+      text-transform: uppercase; white-space: nowrap; min-width: 90px;
     }
     .struct-value { color: var(--text); }
     .bubble strong { font-weight: 600; color: var(--text); }
     .bubble strong.section-label {
-      display: inline-block;
-      color: var(--sub);
-      font-size: 12px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      margin-bottom: 2px;
+      display: inline-block; color: var(--sub); font-size: 12px;
+      letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 2px;
     }
     .user .bubble strong { color: #fff; }
     .bubble h3 {
-      font-size: 13px; font-weight: 700;
-      color: var(--sub);
-      margin: 14px 0 6px;
-      padding: 0;
-      letter-spacing: .03em;
-      text-transform: uppercase;
+      font-size: 13px; font-weight: 700; color: var(--sub);
+      margin: 14px 0 6px; padding: 0; letter-spacing: .03em; text-transform: uppercase;
     }
     .bubble h3:first-child { margin-top: 0; }
-    .bubble code {
-      background: #f0ede5; padding: 1px 5px;
-      border-radius: 4px; font-size: 13px;
-    }
-    .user .bubble code {
-      background: rgba(255,255,255,.12); color: #e8e0d5;
-    }
-    .bubble hr {
-      border: none; border-top: 1px solid var(--border);
-      margin: 12px 0;
-    }
+    .bubble code { background: #f0ede5; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+    .user .bubble code { background: rgba(255,255,255,.12); color: #e8e0d5; }
+    .bubble hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
 
-    /* Request letter card */
     .req-card {
-      margin: 4px -4px -2px;
-      background: #fffdf6;
-      border: 1px solid #dfc990;
-      border-radius: var(--r-md);
-      overflow: hidden;
+      margin: 4px -4px -2px; background: #fffdf6;
+      border: 1px solid #dfc990; border-radius: var(--r-md); overflow: hidden;
     }
     .req-card-header {
-      background: var(--header);
-      padding: 10px 16px;
+      background: var(--header); padding: 10px 16px;
       display: flex; align-items: center; gap: 8px;
     }
-    .req-card-badge {
-      font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-      font-weight: 700; color: var(--accent);
-    }
+    .req-card-badge { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--accent); }
     .req-card-date { font-size: 11px; color: #5a5040; margin-left: auto; }
     .req-card-body { padding: 14px 16px; }
     .req-section { margin-bottom: 14px; }
     .req-section:last-child { margin-bottom: 0; }
-    .req-section-num {
-      font-size: 10px; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--accent);
-      margin-bottom: 4px;
-    }
-    .req-section-content {
-      font-size: 13.5px; color: var(--text); line-height: 1.8;
-    }
-    .req-copy-row {
-      padding: 10px 16px;
-      border-top: 1px solid #e8d9a0;
-      display: flex; justify-content: flex-end;
-      background: #faf5e4;
-    }
+    .req-section-num { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .req-section-content { font-size: 13.5px; color: var(--text); line-height: 1.8; }
+    .req-copy-row { padding: 10px 16px; border-top: 1px solid #e8d9a0; display: flex; justify-content: flex-end; background: #faf5e4; }
     .copy-btn-inner {
-      border: 1px solid #d4b86a;
-      background: #fff;
-      color: var(--header);
-      padding: 7px 14px;
-      border-radius: 999px;
+      border: 1px solid #d4b86a; background: #fff; color: var(--header);
+      padding: 7px 14px; border-radius: 999px;
       font-family: inherit; font-size: 12px; font-weight: 500;
       cursor: pointer; display: flex; align-items: center; gap: 5px;
     }
     .copy-btn-inner:hover { background: var(--accent-lt); }
 
-    /* Stage badge inside message */
     .stage-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      background: var(--blue-lt);
-      border: 1px solid #c0d0ea;
-      color: var(--blue);
-      font-size: 11px; font-weight: 600;
-      padding: 3px 9px; border-radius: 999px;
-      margin-bottom: 10px;
+      background: var(--blue-lt); border: 1px solid #c0d0ea; color: var(--blue);
+      font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; margin-bottom: 10px;
     }
 
-    /* Typing indicator */
     .typing {
       display: inline-flex; gap: 5px; align-items: center;
-      padding: 12px 15px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 3px 14px 14px 14px;
-      box-shadow: var(--shadow-sm);
+      padding: 12px 15px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 3px 14px 14px 14px; box-shadow: var(--shadow-sm);
     }
     .typing span {
       width: 6px; height: 6px; border-radius: 50%;
@@ -630,92 +409,49 @@
       50% { opacity: 1; transform: translateY(-2px); }
     }
 
-    /* ── COMPOSER ────────────────────────────────────── */
     .composer {
       position: sticky; bottom: 0;
-      background: linear-gradient(to bottom,
-        rgba(245,241,234,0) 0%,
-        rgba(245,241,234,.92) 18%,
-        rgba(245,241,234,1) 36%
-      );
+      background: linear-gradient(to bottom, rgba(245,241,234,0) 0%, rgba(245,241,234,.92) 18%, rgba(245,241,234,1) 36%);
       padding-top: 12px; margin-top: 4px;
     }
     .composer-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      padding: 11px 12px 10px;
-      box-shadow: var(--shadow-md);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-md); padding: 11px 12px 10px; box-shadow: var(--shadow-md);
     }
     .composer textarea {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 11px 13px;
-      background: #fff;
-      color: var(--text);
+      width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 11px 13px; background: #fff; color: var(--text);
       font-family: inherit; font-size: 14px; line-height: 1.75;
       min-height: 86px; resize: none; outline: none;
     }
-    .composer textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196,147,63,.12);
-    }
+    .composer textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,147,63,.12); }
     .composer textarea::placeholder { color: var(--muted); }
-    .composer-foot {
-      margin-top: 9px;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    }
+    .composer-foot { margin-top: 9px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .composer-hint { font-size: 11px; color: var(--muted); }
     .composer-right { display: flex; align-items: center; gap: 8px; }
     .copy-global-btn {
-      display: none;
-      border: 1px solid var(--border-dk);
-      background: var(--bg);
-      color: var(--sub);
-      padding: 8px 13px;
-      border-radius: var(--r-sm);
+      display: none; border: 1px solid var(--border-dk); background: var(--bg); color: var(--sub);
+      padding: 8px 13px; border-radius: var(--r-sm);
       font-family: inherit; font-size: 12px; font-weight: 500;
-      cursor: pointer; align-items: center; gap: 5px;
-      transition: all .15s;
+      cursor: pointer; align-items: center; gap: 5px; transition: all .15s;
     }
     .copy-global-btn.show { display: inline-flex; }
-    .copy-global-btn:hover {
-      background: var(--accent-lt); border-color: var(--accent);
-      color: var(--text);
-    }
-
-    /* NDA 가이드 버튼 */
+    .copy-global-btn:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--text); }
     .nda-guide-btn {
-      display: none;
-      border: none;
-      background: var(--blue);
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: var(--r-sm);
+      display: none; border: none; background: var(--blue); color: #fff;
+      padding: 8px 14px; border-radius: var(--r-sm);
       font-family: inherit; font-size: 12px; font-weight: 600;
-      cursor: pointer; align-items: center; gap: 5px;
-      transition: all .15s;
-      text-decoration: none;
+      cursor: pointer; align-items: center; gap: 5px; transition: all .15s; text-decoration: none;
     }
     .nda-guide-btn.show { display: inline-flex; }
     .nda-guide-btn:hover { background: #1a4a8a; }
 
-    /* ── FOOTER ──────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: 10px 16px 16px;
-      color: var(--muted); font-size: 11px;
-    }
+    footer { text-align: center; padding: 10px 16px 16px; color: var(--muted); font-size: 11px; }
 
-    /* ── SCROLL BAR ──────────────────────────────────── */
     .chat-log::-webkit-scrollbar { width: 5px; }
     .chat-log::-webkit-scrollbar-track { background: transparent; }
-    .chat-log::-webkit-scrollbar-thumb {
-      background: var(--border-dk); border-radius: 99px;
-    }
+    .chat-log::-webkit-scrollbar-thumb { background: var(--border-dk); border-radius: 99px; }
 
-    /* ── RESPONSIVE ──────────────────────────────────── */
     @media (max-width: 640px) {
       .hero-h { font-size: 21px; }
       .hero-top, .hero-body { padding: 18px 16px; }
@@ -729,7 +465,6 @@
 <body>
 <div class="app">
 
-  <!-- HEADER -->
   <header>
     <div class="logo">
       <div class="logo-icon">법</div>
@@ -748,19 +483,19 @@
     <div class="api-header" id="apiToggle">
       <div class="api-header-left">
         <div class="api-dot" id="apiDot"></div>
-        <div class="api-label" id="apiLabel">Anthropic API 키를 설정해주세요</div>
+        <div class="api-label" id="apiLabel">Google Gemini API 키를 설정해주세요</div>
       </div>
       <div class="api-toggle" id="apiToggleText">▾ 열기</div>
     </div>
     <div class="api-body" id="apiBody">
       <div class="api-field">
         <input class="api-input" id="apiKey" type="password"
-          placeholder="sk-ant-..." autocomplete="off" />
+          placeholder="AIza..." autocomplete="off" />
         <button class="api-save-btn" id="apiSaveBtn" type="button">저장</button>
       </div>
       <div class="api-hint">
         브라우저 세션 동안만 유지되며 저장되지 않습니다 ·
-        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console에서 발급</a>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio에서 발급</a>
       </div>
     </div>
   </div>
@@ -796,7 +531,6 @@
             <p class="hero-p">자유롭게 설명하시면 AI가 단계별로 구조를 정리하고 빠진 쟁점을 점검한 뒤, 법무팀에 바로 전달할 수 있는 검토 요청서를 작성해드립니다.</p>
           </div>
           <div class="hero-body">
-
             <div class="flow-steps">
               <div class="flow-step">
                 <div class="flow-num">1</div>
@@ -890,21 +624,14 @@
 </div>
 
 <script>
-/* ──────────────────────────────────────────────────
-   HELPERS
-────────────────────────────────────────────────── */
+/* ── HELPERS ── */
 function todayStr() {
   const d = new Date();
   return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
 }
-
 function esc(s) {
-  return s
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-
 function inlineFmt(s) {
   return s
     .replace(/\*\*(.*?):\*\*/g, '<strong class="section-label">$1</strong>')
@@ -912,13 +639,8 @@ function inlineFmt(s) {
     .replace(/`([^`]+)`/g,'<code>$1</code>');
 }
 
-/* ──────────────────────────────────────────────────
-   RENDER MESSAGE
-   Supports: ###/## headings, bullet/number lists,
-   [법무 검토 요청서] block → special card
-────────────────────────────────────────────────── */
+/* ── RENDER MESSAGE ── */
 function renderMessage(text) {
-  // Split off the 법무 검토 요청서 block if present
   const REQ_MARKER = '[법무 검토 요청서]';
   const reqIdx = text.indexOf(REQ_MARKER);
   if (reqIdx !== -1) {
@@ -929,41 +651,23 @@ function renderMessage(text) {
   return renderMarkdown(text);
 }
 
-/* ──────────────────────────────────────────────────
-   AUTO CHOICE DETECTION
-   질문 텍스트에서 선택지를 자동 감지
-────────────────────────────────────────────────── */
+/* ── AUTO CHOICE DETECTION ── */
 function detectChoices(text) {
   const t = text.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#39;/g,"'").replace(/&quot;/g,'"');
-
-  // "A인가요, 아니면 B인가요?" → [A, B]
   const eitherM = t.match(/(.{2,20})(?:인가요|나요)[,，]\s*아니면\s+(.{2,20})(?:인가요|나요)/);
   if (eitherM) return [eitherM[1].trim(), eitherM[2].trim()];
-
-  // "A 구조인가요, 아니면 B 구조인가요?"
   const structM2 = t.match(/(.{2,25})(?:구조|방식|형태)(?:인가요|나요)[,，]\s*아니면\s+(.{2,25})(?:구조|방식|형태)(?:인가요|나요)/);
   if (structM2) return [(eitherM ? eitherM[1] : structM2[1].trim()) + ' 구조', structM2[2].trim() + ' 구조'];
-
-  // 있나요/있으신가요 → [있습니다, 없습니다]
   if (/있[나으]?[신]?가요|있으신가요/.test(t) && !/어떤|어느|얼마|어디|누가|왜|무엇/.test(t))
     return ['있습니다', '없습니다'];
-
-  // 예정인가요 / 계획인가요 → [예, 아니요]
   if (/예정인가요|계획인가요|할 예정/.test(t))
     return ['예, 있습니다', '아직 미정입니다', '아니요'];
-
-  // 공유해야 할 상황 → [있습니다, 없습니다]
   if (/공유해야\s*할\s*상황/.test(t))
     return ['있습니다', '없습니다'];
-
-  // 정해져 있나요 / 협의됐나요
   if (/정해져\s*있나요|협의됐나요|합의됐나요/.test(t))
     return ['네, 정해졌습니다', '아직 미정입니다'];
-
-  // 생각하고 계신가요 → 자유입력 (선택지 불필요)
   return [];
 }
-
 
 function renderMarkdown(text) {
   const safe = esc(text).replace(/\r\n/g,'\n');
@@ -985,7 +689,6 @@ function renderMarkdown(text) {
     const line = raw.trimEnd();
     if (!line.trim()) { flushList(); continue; }
 
-    // [선택] option1 | option2 | option3
     const choiceM = line.match(/^\[선택\]\s*(.*)/);
     if (choiceM) {
       flushList();
@@ -997,7 +700,6 @@ function renderMarkdown(text) {
       continue;
     }
 
-    // 거래구조 항목: "레이블: 값" 패턴 (1단계 분석)
     const structM = line.match(/^([^:：]{2,12})[：:]\s+(.*)/);
     if (structM && !line.startsWith('-') && !line.match(/^\d+\./)) {
       flushList();
@@ -1008,40 +710,31 @@ function renderMarkdown(text) {
       continue;
     }
 
-    // Headings
     const h3m = line.match(/^###\s+(.*)/);
     const h2m = line.match(/^##\s+(.*)/);
-    if (h3m || h2m) {
-      flushList();
-      html += `<h3>${inlineFmt((h3m||h2m)[1])}</h3>`;
-      continue;
-    }
-    // HR
+    if (h3m || h2m) { flushList(); html += `<h3>${inlineFmt((h3m||h2m)[1])}</h3>`; continue; }
     if (/^-{3,}$/.test(line.trim())) { flushList(); html += '<hr>'; continue; }
-    // Bullet
+
     const bm = line.match(/^[-*•]\s+(.*)/);
     if (bm) {
       if (listType !== 'ul') { flushList(); listType = 'ul'; }
       listBuf += `<li>${inlineFmt(bm[1])}</li>`;
       continue;
     }
-    // Numbered
+
     const nm = line.match(/^(\d+)\.\s+(.*)/);
     if (nm) {
       if (listType !== 'ol') { flushList(); listType = 'ol'; }
       const qText = nm[2];
-
-      // 다음 줄이 [선택]이면 소비해서 사용, 아니면 자동 감지
       let choices = [];
       const nextLine = (lines[i + 1] || '').trimEnd();
       const nextChoiceM = nextLine.match(/^\[선택\]\s*(.*)/);
       if (nextChoiceM) {
         choices = nextChoiceM[1].split('|').map(function(o){ return o.trim(); }).filter(Boolean);
-        i++; // [선택] 줄 건너뜀
+        i++;
       } else {
         choices = detectChoices(qText);
       }
-
       const choiceHtml = choices.length
         ? '<div class="choice-row">' + choices.map(function(o) {
             return '<button class="choice-btn" data-choice="' + o.replace(/"/g,'&quot;') + '">' + inlineFmt(esc(o)) + '</button>';
@@ -1059,7 +752,6 @@ function renderMarkdown(text) {
 }
 
 function renderRequestCard(body) {
-  // Parse numbered sections
   const sections = [];
   const lines = body.split('\n');
   let curSec = null;
@@ -1088,7 +780,6 @@ function renderRequestCard(body) {
         <div class="req-section-content">${renderMarkdown(esc(content).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>'))}</div>
       </div>`;
   });
-  // If no sections parsed, just show raw
   if (!sections.length) {
     secHtml = `<div class="req-section"><div class="req-section-content">${renderMarkdown(body)}</div></div>`;
   }
@@ -1116,7 +807,6 @@ function submitChoice(value) {
   input.focus();
 }
 
-// 이벤트 위임: data-choice 버튼 클릭
 document.addEventListener('click', function(e) {
   const btn = e.target.closest('.choice-btn[data-choice]');
   if (btn) submitChoice(btn.getAttribute('data-choice'));
@@ -1135,9 +825,7 @@ function copyReqFromCard(btn) {
   });
 }
 
-/* ──────────────────────────────────────────────────
-   SYSTEM PROMPT
-────────────────────────────────────────────────── */
+/* ── SYSTEM PROMPT ── */
 function getSystemPrompt() {
   return `당신은 기업 법무팀을 위한 Legal Intake Assistant입니다.
 현업 담당자가 법무 검토를 요청하기 전에 거래 구조를 정리하고, 필요한 정보를 수집하고, 빠진 쟁점을 짚어준 뒤, 법무팀에 바로 전달할 수 있는 검토 요청서를 작성하도록 돕는 것이 역할입니다.
@@ -1364,49 +1052,49 @@ NDA: 비밀정보 정의 범위 / 예외 정보(공개된 정보, 독자 개발 
 }
 
 /* ──────────────────────────────────────────────────
-   ANTHROPIC API
+   GOOGLE GEMINI API
 ────────────────────────────────────────────────── */
 async function callGemini(apiKey, history) {
-  const url = '/api/proxy';
+  const model = 'gemini-2.5-flash-preview-05-20';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const messages = history.map(m => ({
-    role: m.role === 'assistant' ? 'assistant' : 'user',
-    content: m.content
+  // Gemini uses "user" / "model" roles (not "assistant")
+  const contents = history.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
   }));
 
   const body = {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 4096,
-    system: getSystemPrompt(),
-    messages
+    system_instruction: {
+      parts: [{ text: getSystemPrompt() }]
+    },
+    contents,
+    generationConfig: {
+      maxOutputTokens: 4096,
+      temperature: 0.7
+    }
   };
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-request-header': 'true'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
 
   const data = await res.json();
+
   if (!res.ok) {
     const msg = data?.error?.message || 'API 호출 중 오류가 발생했습니다.';
-    const type = data?.error?.type || 'ERROR';
-    throw new Error(`[${type}] ${msg}`);
+    const status = data?.error?.status || 'ERROR';
+    throw new Error(`[${status}] ${msg}`);
   }
 
-  const text = data?.content?.map(c => c.text || '').join('').trim();
+  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim();
   if (!text) throw new Error('[EMPTY_RESPONSE] 응답 본문이 비어 있습니다.');
   return text;
 }
 
-/* ──────────────────────────────────────────────────
-   STAGE DETECTION
-────────────────────────────────────────────────── */
+/* ── STAGE DETECTION ── */
 function detectStage(text) {
   if (text.includes('[법무 검토 요청서]')) return 3;
   if (text.includes('[3단계]') || text.includes('추가 확인이 필요한 쟁점')) return 2;
@@ -1422,17 +1110,9 @@ function addStageBadge(text) {
   return '';
 }
 
-/* ──────────────────────────────────────────────────
-   UI HELPERS
-────────────────────────────────────────────────── */
-function showStatus(el, type, msg) {
-  el.className = `status-msg show ${type}`;
-  el.textContent = msg;
-}
-function clearStatus(el) {
-  el.className = 'status-msg';
-  el.textContent = '';
-}
+/* ── UI HELPERS ── */
+function showStatus(el, type, msg) { el.className = `status-msg show ${type}`; el.textContent = msg; }
+function clearStatus(el) { el.className = 'status-msg'; el.textContent = ''; }
 
 let currentStep = 1;
 function setStep(n) {
@@ -1451,7 +1131,6 @@ function setStep(n) {
 function addMessage(role, text, isErr=false) {
   const row = document.createElement('div');
   row.className = `msg-row ${role === 'user' ? 'user' : 'assistant'}`;
-
   if (role !== 'user') {
     const av = document.createElement('div');
     av.className = 'avatar';
@@ -1461,23 +1140,16 @@ function addMessage(role, text, isErr=false) {
     </svg>`;
     row.appendChild(av);
   }
-
   const bub = document.createElement('div');
   bub.className = 'bubble';
-
   const badge = addStageBadge(text);
   const cleanText = text
     .replace('[1단계] 거래 구조 분석','')
     .replace('[2단계] 필수 정보 확인','')
     .replace('[3단계] 추가 확인이 필요한 쟁점','')
     .trim();
-
   bub.innerHTML = badge + renderMessage(role === 'user' ? text : cleanText);
-  if (isErr) {
-    bub.style.background = '#fff3f2';
-    bub.style.borderColor = '#f1c6c0';
-    bub.style.color = '#8a3030';
-  }
+  if (isErr) { bub.style.background = '#fff3f2'; bub.style.borderColor = '#f1c6c0'; bub.style.color = '#8a3030'; }
   row.appendChild(bub);
   chatLog.appendChild(row);
   chatLog.scrollTop = chatLog.scrollHeight;
@@ -1493,13 +1165,9 @@ function addTyping() {
   chatLog.appendChild(row);
   chatLog.scrollTop = chatLog.scrollHeight;
 }
-function removeTyping() {
-  document.getElementById('typingRow')?.remove();
-}
+function removeTyping() { document.getElementById('typingRow')?.remove(); }
 
-/* ──────────────────────────────────────────────────
-   DOM REFS
-────────────────────────────────────────────────── */
+/* ── DOM REFS ── */
 const apiKeyEl      = document.getElementById('apiKey');
 const apiDot        = document.getElementById('apiDot');
 const apiLabel      = document.getElementById('apiLabel');
@@ -1526,63 +1194,42 @@ let isLoading = false;
 let savedApiKey = '';
 let hasRequestLetter = false;
 
-/* ──────────────────────────────────────────────────
-   API KEY PANEL
-────────────────────────────────────────────────── */
+/* ── API KEY PANEL ── */
 let apiOpen = true;
 apiToggle.addEventListener('click', () => {
   apiOpen = !apiOpen;
   apiBody.classList.toggle('collapsed', !apiOpen);
   apiToggleText.textContent = apiOpen ? '▴ 닫기' : '▾ 열기';
 });
-
 apiSaveBtn.addEventListener('click', () => {
   const key = apiKeyEl.value.trim();
-  if (!key) { return; }
+  if (!key) return;
   savedApiKey = key;
   apiDot.classList.add('ok');
   apiLabel.textContent = 'API 키 설정됨';
   apiLabel.classList.add('ok');
-  // Auto-collapse
   apiOpen = false;
   apiBody.classList.add('collapsed');
   apiToggleText.textContent = '▾ 열기';
 });
+apiKeyEl.addEventListener('keydown', e => { if (e.key === 'Enter') apiSaveBtn.click(); });
 
-apiKeyEl.addEventListener('keydown', e => {
-  if (e.key === 'Enter') apiSaveBtn.click();
-});
-
-/* ──────────────────────────────────────────────────
-   PROCESS INPUT
-────────────────────────────────────────────────── */
+/* ── PROCESS INPUT ── */
 async function processInput(source) {
   if (isLoading) return;
-
   const inputEl = source === 'landing' ? landingInput : chatInput;
   const statusEl = source === 'landing' ? landingStatus : chatStatus;
   const text = inputEl.value.trim();
   const apiKey = savedApiKey || apiKeyEl.value.trim();
-
   clearStatus(statusEl);
-
-  if (!apiKey) {
-    showStatus(statusEl, 'error', 'Anthropic API 키를 먼저 설정해주세요. (상단 패널)');
-    return;
-  }
-  if (!text) {
-    showStatus(statusEl, 'error', '거래 내용 또는 추가 정보를 입력해주세요.');
-    return;
-  }
-
+  if (!apiKey) { showStatus(statusEl, 'error', 'Google Gemini API 키를 먼저 설정해주세요. (상단 패널)'); return; }
+  if (!text) { showStatus(statusEl, 'error', '거래 내용 또는 추가 정보를 입력해주세요.'); return; }
   if (source === 'landing') {
     landing.classList.remove('active');
     chatView.classList.add('active');
     resetBtn.classList.remove('hidden');
     setStep(1);
   }
-
-  // Build outgoing text (prepend contract type if selected on landing)
   let outgoing = text;
   if (source === 'landing' && contractType.value !== 'auto') {
     const map = {
@@ -1592,32 +1239,26 @@ async function processInput(source) {
     };
     outgoing = `[사용자 선택 계약 유형] ${map[contractType.value]||contractType.value}\n[거래 설명]\n${text}`;
   }
-
   addMessage('user', text);
   history.push({ role: 'user', content: outgoing });
   inputEl.value = '';
   isLoading = true;
   addTyping();
-
   try {
     const reply = await callGemini(apiKey, history);
     removeTyping();
     addMessage('assistant', reply);
     history.push({ role: 'assistant', content: reply });
-
-    // Stage update
     const stage = detectStage(reply);
     if (stage === 2) setStep(2);
     if (stage === 3) {
       setStep(3);
       hasRequestLetter = true;
       copyGlobalBtn.classList.add('show');
-      // NDA 계약 유형이면 가이드 버튼 노출
       const isNda = contractType.value === 'nda' ||
         history.some(m => /NDA|비밀유지|Confidential/i.test(m.content));
       if (isNda) ndaGuideBtn.classList.add('show');
     }
-
     if (stage < 3 && source === 'landing') {
       showStatus(chatStatus, 'tip', '추가 질문에 답하면 마지막 단계에서 법무 검토 요청서가 자동으로 작성됩니다.');
     }
@@ -1630,15 +1271,10 @@ async function processInput(source) {
   }
 }
 
-/* ──────────────────────────────────────────────────
-   COPY GLOBAL BUTTON
-────────────────────────────────────────────────── */
+/* ── COPY GLOBAL BUTTON ── */
 copyGlobalBtn.addEventListener('click', async () => {
   const reqCard = chatLog.querySelector('.req-card');
-  if (!reqCard) {
-    showStatus(chatStatus, 'error', '요청서가 아직 생성되지 않았습니다.');
-    return;
-  }
+  if (!reqCard) { showStatus(chatStatus, 'error', '요청서가 아직 생성되지 않았습니다.'); return; }
   const header = reqCard.querySelector('.req-card-header').textContent.trim();
   const body = reqCard.querySelector('.req-card-body').innerText.trim();
   try {
@@ -1649,21 +1285,13 @@ copyGlobalBtn.addEventListener('click', async () => {
   }
 });
 
-/* ──────────────────────────────────────────────────
-   RESET
-────────────────────────────────────────────────── */
+/* ── RESET ── */
 function resetApp() {
-  history = [];
-  currentStep = 1;
-  hasRequestLetter = false;
-  chatLog.innerHTML = '';
-  landingInput.value = '';
-  contractType.value = 'auto';
-  chatInput.value = '';
-  clearStatus(landingStatus);
-  clearStatus(chatStatus);
-  copyGlobalBtn.classList.remove('show');
-  ndaGuideBtn.classList.remove('show');
+  history = []; currentStep = 1; hasRequestLetter = false;
+  chatLog.innerHTML = ''; landingInput.value = '';
+  contractType.value = 'auto'; chatInput.value = '';
+  clearStatus(landingStatus); clearStatus(chatStatus);
+  copyGlobalBtn.classList.remove('show'); ndaGuideBtn.classList.remove('show');
   [1,2,3].forEach(i => {
     const el = document.getElementById(`step${i}`);
     const line = document.getElementById(`line${i}`);
@@ -1678,13 +1306,10 @@ function resetApp() {
   landingInput.focus();
 }
 
-/* ──────────────────────────────────────────────────
-   EVENT LISTENERS
-────────────────────────────────────────────────── */
+/* ── EVENT LISTENERS ── */
 startBtn.addEventListener('click', () => processInput('landing'));
 sendBtn.addEventListener('click', () => processInput('chat'));
 resetBtn.addEventListener('click', resetApp);
-
 [landingInput, chatInput].forEach(el => {
   el.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1693,16 +1318,10 @@ resetBtn.addEventListener('click', resetApp);
     }
   });
 });
-
 document.querySelectorAll('[data-example]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    landingInput.value = btn.getAttribute('data-example');
-    landingInput.focus();
-  });
+  btn.addEventListener('click', () => { landingInput.value = btn.getAttribute('data-example'); landingInput.focus(); });
 });
-
 window.addEventListener('load', () => {
-  // Start with API panel open, body expanded
   apiBody.classList.remove('collapsed');
   landingInput.focus();
 });
