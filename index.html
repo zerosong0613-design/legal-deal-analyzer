@@ -1055,7 +1055,7 @@ NDA: 비밀정보 정의 범위 / 예외 정보(공개된 정보, 독자 개발 
    GOOGLE GEMINI API
 ────────────────────────────────────────────────── */
 async function callGemini(apiKey, history) {
-  const model = 'gemini-2.5-flash-preview-05-20';
+  const model = 'gemini-2.0-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   // Gemini uses "user" / "model" roles (not "assistant")
