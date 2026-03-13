@@ -748,7 +748,7 @@
     <div class="api-header" id="apiToggle">
       <div class="api-header-left">
         <div class="api-dot" id="apiDot"></div>
-        <div class="api-label" id="apiLabel">Anthropic API 키를 설정해주세요</div>
+        <div class="api-label" id="apiLabel">Gemini API 키를 설정해주세요</div>
       </div>
       <div class="api-toggle" id="apiToggleText">▾ 열기</div>
     </div>
@@ -760,7 +760,7 @@
       </div>
       <div class="api-hint">
         브라우저 세션 동안만 유지되며 저장되지 않습니다 ·
-        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console에서 발급</a>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio에서 발급</a>
       </div>
     </div>
   </div>
@@ -1367,39 +1367,40 @@ NDA: 비밀정보 정의 범위 / 예외 정보(공개된 정보, 독자 개발 
    ANTHROPIC API
 ────────────────────────────────────────────────── */
 async function callGemini(apiKey, history) {
-  const url = '/api/proxy';
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const messages = history.map(m => ({
-    role: m.role === 'assistant' ? 'assistant' : 'user',
-    content: m.content
+  // Gemini는 role이 "user" / "model" (assistant → model 변환)
+  const contents = history.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
   }));
 
   const body = {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 4096,
-    system: getSystemPrompt(),
-    messages
+    system_instruction: {
+      parts: [{ text: getSystemPrompt() }]
+    },
+    contents,
+    generationConfig: {
+      maxOutputTokens: 4096,
+      temperature: 0.7
+    }
   };
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-request-header': 'true'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
 
   const data = await res.json();
   if (!res.ok) {
     const msg = data?.error?.message || 'API 호출 중 오류가 발생했습니다.';
-    const type = data?.error?.type || 'ERROR';
-    throw new Error(`[${type}] ${msg}`);
+    const code = data?.error?.code || 'ERROR';
+    throw new Error(`[${code}] ${msg}`);
   }
 
-  const text = data?.content?.map(c => c.text || '').join('').trim();
+  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim();
   if (!text) throw new Error('[EMPTY_RESPONSE] 응답 본문이 비어 있습니다.');
   return text;
 }
@@ -1567,7 +1568,7 @@ async function processInput(source) {
   clearStatus(statusEl);
 
   if (!apiKey) {
-    showStatus(statusEl, 'error', 'Anthropic API 키를 먼저 설정해주세요. (상단 패널)');
+    showStatus(statusEl, 'error', 'Gemini API 키를 먼저 설정해주세요. (상단 패널)');
     return;
   }
   if (!text) {
