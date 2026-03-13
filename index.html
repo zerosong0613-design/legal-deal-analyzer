@@ -640,15 +640,56 @@ function inlineFmt(s) {
 }
 
 /* ── RENDER MESSAGE ── */
+/* ── CHOICE TAG INJECTOR ──
+   AI(Gemini)가 [선택] 태그를 빠뜨릴 때 질문 패턴을 보고 자동 주입 */
+function injectChoiceTags(text) {
+  const lines = text.split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    out.push(lines[i]);
+    const line = lines[i];
+    if (!/^\d+\.\s+/.test(line)) continue;          // 번호 목록 줄만
+    if ((lines[i+1]||'').trim().startsWith('[선택]')) continue; // 이미 있음
+
+    const q = line.replace(/^\d+\.\s+/, '');
+    let sel = null;
+
+    if (/주고받|상호\s*제공|양방향|양쪽.*제공|정보.*방향|단방향|어느\s*쪽.*제공|제공.*구조/.test(q))
+      sel = '[선택] 양방향 (상호 제공) | SK가 제공 | 상대방이 제공';
+    else if (/독점/.test(q))
+      sel = '[선택] 독점 | 비독점 | 아직 미정';
+    else if (/(반환|파기|돌려|처리)/.test(q) && /(계약.*끝|종료|끝나|만료)/.test(q))
+      sel = '[선택] 반환 | 파기 | 아직 미정';
+    else if (/맞[나는]지|맞나요|맞습니까|이해.*맞/.test(q))
+      sel = '[선택] 네, 맞습니다 | 일부 수정 필요 | 아니요, 다릅니다';
+    else if (/(제3자|외부).*공유|자문사|계열사.*공유|공유해야/.test(q))
+      sel = '[선택] 공유 없음 | 계열사/자문사에만 | 별도 협의 필요';
+    else if (/준거법|관할|어느.*법원/.test(q))
+      sel = '[선택] 한국법 | 미정 | 상대방 요청 있음';
+    else if (/재위탁|하도급|다른.*업체.*넘/.test(q))
+      sel = '[선택] 허용 | 불허 | 사전 동의 조건으로 허용';
+    else if (/검수.*기준|완료.*기준|판단.*기준/.test(q))
+      sel = '[선택] 네, 기준 있음 | 아직 없음 | 협의 중';
+    else if (/있[나으신]*가요|있으신가요/.test(q) && !/어떤|어느|얼마|어디|누가|왜|무엇|목적|어떻게|종류|내용/.test(q))
+      sel = '[선택] 있습니다 | 없습니다';
+
+    if (sel) {
+      out.push(sel);
+      out.push('기타 상황은 직접 입력해주세요.');
+    }
+  }
+  return out.join('\n');
+}
+
 function renderMessage(text) {
   const REQ_MARKER = '[법무 검토 요청서]';
   const reqIdx = text.indexOf(REQ_MARKER);
   if (reqIdx !== -1) {
     const before = text.slice(0, reqIdx).trim();
     const reqBody = text.slice(reqIdx + REQ_MARKER.length).trim();
-    return (before ? renderMarkdown(before) : '') + renderRequestCard(reqBody);
+    return (before ? renderMarkdown(injectChoiceTags(before)) : '') + renderRequestCard(reqBody);
   }
-  return renderMarkdown(text);
+  return renderMarkdown(injectChoiceTags(text));
 }
 
 /* ── AUTO CHOICE DETECTION ── */
